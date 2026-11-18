@@ -11,6 +11,7 @@ import { db } from "@backend/lib/db";
 import { ApiError, clientRateKey, errorResponse, jsonBody, sameOrigin } from "@backend/lib/http";
 
 import { rateLimit } from "@backend/lib/quota";
+import { logActivity } from "@backend/lib/activity";
 import { ROLE_USER } from "@backend/lib/roles";
 
 
@@ -29,18 +30,19 @@ export async function POST(req: Request) {
 
       throw new ApiError("INVALID_INPUT", "Use a valid email and a password of 12–72 characters.");
 
-    await db.user.create({
-
+    const email = parsed.data.email.toLowerCase();
+    const created = await db.user.create({
       data: {
-
-        email: parsed.data.email.toLowerCase(),
-
+        email,
         passwordHash: await hash(parsed.data.password, 12),
-
         role: ROLE_USER,
-
       },
+    });
 
+    await logActivity({
+      userId: created.id,
+      action: "sign_up",
+      summary: `${email} created an account`,
     });
 
     return NextResponse.json({ ok: true }, { status: 201 });

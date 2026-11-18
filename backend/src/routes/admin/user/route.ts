@@ -5,6 +5,7 @@ import { requireUser } from "@backend/lib/access";
 import { db } from "@backend/lib/db";
 import { ApiError, errorResponse, jsonBody, sameOrigin } from "@backend/lib/http";
 import { parseUsdAmount, usdFromDb } from "@backend/lib/money";
+import { logActivity } from "@backend/lib/activity";
 import { ROLE_ADMIN, ROLE_USER, normalizeRole } from "@backend/lib/roles";
 
 const updateSchema = z
@@ -21,7 +22,7 @@ const updateSchema = z
 export async function PATCH(req: Request) {
   try {
     sameOrigin(req);
-    await requireUser(true);
+    const actor = await requireUser(true);
     const parsed = updateSchema.safeParse(await jsonBody(req));
     if (!parsed.success)
       throw new ApiError("INVALID_INPUT", "Provide a valid user id and email and/or role (0 or 1).");
@@ -36,6 +37,14 @@ export async function PATCH(req: Request) {
       where: { id },
       data,
       select: { id: true, email: true, role: true, balanceUsd: true, createdAt: true },
+    });
+
+    await logActivity({
+      userId: actor.id,
+      action: "admin_user_update",
+      summary: `Admin updated ${updated.email}`,
+      meta: { targetUserId: id, fields: Object.keys(data) },
+      incrementRequestCount: false,
     });
 
     return NextResponse.json({

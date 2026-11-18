@@ -7,6 +7,7 @@ import { requireUser } from "@backend/lib/access";
 import { db } from "@backend/lib/db";
 import { ApiError, errorResponse, jsonBody, sameOrigin } from "@backend/lib/http";
 import { parseUsdAmount, usdFromDb } from "@backend/lib/money";
+import { logActivity } from "@backend/lib/activity";
 import { normalizeRole, roleLabel } from "@backend/lib/roles";
 
 const passwordRules = credentialsSchema.shape.password;
@@ -109,6 +110,13 @@ export async function PATCH(req: Request) {
       where: { id: actor.id },
       data,
       select: { id: true, email: true, role: true, balanceUsd: true, createdAt: true },
+    });
+
+    await logActivity({
+      userId: actor.id,
+      action: "profile_update",
+      summary: `${updated.email} updated their profile`,
+      meta: { fields: Object.keys(data) },
     });
 
     return NextResponse.json({ user: serializeUser(updated) });

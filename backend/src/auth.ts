@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createHmac } from "node:crypto";
 import { db } from "@backend/lib/db";
 import { rateLimit } from "@backend/lib/quota";
+import { logActivity } from "@backend/lib/activity";
 import { normalizeRole } from "@backend/lib/roles";
 
 const credentialsSchema = z.object({
@@ -41,6 +42,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user?.passwordHash ?? (await dummyHash),
         );
         if (!user || !valid) return null;
+        void logActivity({
+          userId: user.id,
+          action: "sign_in",
+          summary: `${email} signed in`,
+        }).catch(() => {});
         return { id: user.id, email: user.email };
       },
     }),
