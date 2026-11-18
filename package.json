@@ -1,0 +1,30 @@
+{
+  "name": "cardscanner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace frontend",
+    "start": "npm run start --workspace frontend",
+    "typecheck": "npm run typecheck --workspaces",
+    "db:generate": "npm run db:generate --workspace backend",
+    "db:migrate": "npm run db:migrate --workspace backend",
+    "db:check": "npm run db:check --workspace backend",
+    "supabase:connect": "npm run supabase:connect --workspace backend",
+    "db:dev": "npm run db:dev --workspace backend --",
+    "admin": "npm run admin --workspace backend --"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "prisma": "^6.19.3",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
