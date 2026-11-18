@@ -1,0 +1,12 @@
+-- Role: 0 = user, 1 = admin (replaces Role enum)
+
+ALTER TABLE "User" ALTER COLUMN "role" DROP DEFAULT;
+
+ALTER TABLE "User" ALTER COLUMN "role" TYPE INTEGER USING (
+  CASE WHEN "role"::text = 'ADMIN' THEN 1 ELSE 0 END
+);
+
+ALTER TABLE "User" ALTER COLUMN "role" SET DEFAULT 0;
+ALTER TABLE "User" ALTER COLUMN "role" SET NOT NULL;
+
+DROP TYPE "Role";

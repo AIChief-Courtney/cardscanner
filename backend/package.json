@@ -1,0 +1,22 @@
+{
+  "name": "@cardscanner/backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "db:generate": "node --env-file=../.env ../node_modules/prisma/build/index.js generate",
+    "db:migrate": "node --env-file=../.env ../node_modules/prisma/build/index.js migrate deploy",
+    "db:dev": "node --env-file=../.env ../node_modules/prisma/build/index.js migrate dev",
+    "db:check": "node --env-file=../.env --import tsx scripts/db-check.ts",
+    "supabase:connect": "node --env-file=../.env --import tsx scripts/connect-supabase.ts",
+    "admin": "node --env-file=../.env --import tsx scripts/admin.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "next": "^15.1.0",
+    "next-auth": "^5.0.0-beta.25",
+    "zod": "^3.24.0"
+  }
+}
