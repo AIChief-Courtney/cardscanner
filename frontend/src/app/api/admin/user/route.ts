@@ -1,0 +1,1 @@
+export { PATCH } from "@backend/routes/admin/user/route";
