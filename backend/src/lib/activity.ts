@@ -16,25 +16,19 @@ export async function logActivity({
   meta,
   incrementRequestCount = true,
 }: LogActivityInput) {
-  const tasks: Promise<unknown>[] = [
-    db.activity.create({
-      data: {
-        userId: userId ?? undefined,
-        action,
-        summary,
-        meta: meta ?? undefined,
-      },
-    }),
-  ];
+  await db.activity.create({
+    data: {
+      userId: userId ?? undefined,
+      action,
+      summary,
+      meta: meta ?? undefined,
+    },
+  });
 
   if (userId && incrementRequestCount) {
-    tasks.push(
-      db.user.update({
-        where: { id: userId },
-        data: { requestCount: { increment: 1 } },
-      }),
-    );
+    await db.user.update({
+      where: { id: userId },
+      data: { requestCount: { increment: 1 } },
+    });
   }
-
-  await db.$transaction(tasks);
 }

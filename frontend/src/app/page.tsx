@@ -116,7 +116,7 @@ export default async function Home() {
               <p>See total users, roles, and when each account was created. Pagination keeps long lists readable.</p>
               <Link
                 className="button outline small"
-                href={user && isAdmin(user.role) ? "/admin" : user ? "/dashboard" : "/signin"}
+                href={user && isAdmin(user.role) ? "/admin/overview" : user ? "/dashboard" : "/signin"}
               >
                 {user && isAdmin(user.role) ? "Open admin" : user ? "Admin only" : "Sign in"}
               </Link>

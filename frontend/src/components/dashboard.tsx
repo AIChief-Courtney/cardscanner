@@ -72,7 +72,7 @@ export function Dashboard({
           <p>Your balance is {formatUsd(balanceUsd)} USD. Contact support if something looks wrong.</p>
         </div>
         {admin && (
-          <Link className="quick-card" href="/admin">
+          <Link className="quick-card" href="/admin/overview">
             <Shield size={20} aria-hidden />
             <h3>Admin overview</h3>
             <p>View all users, roles, and account dates in one table.</p>
@@ -95,7 +95,7 @@ export function Dashboard({
               Explore the home page
             </Link>
             {admin && (
-              <Link className="button outline small" href="/admin">
+              <Link className="button outline small" href="/admin/overview">
                 Open admin
               </Link>
             )}

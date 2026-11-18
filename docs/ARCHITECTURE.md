@@ -7,7 +7,7 @@ frontend/src/app/
   page.tsx              Public home (tools, marketing)
   signin/, signup/      Auth pages
   dashboard/            Signed-in users
-  admin/                role = 1 (admin) only
+  admin/                role = 1 — layout + /overview, /users, /activity
   api/*/route.ts        Thin adapters → backend/src/routes/
 
 backend/

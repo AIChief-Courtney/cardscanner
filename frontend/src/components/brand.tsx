@@ -21,7 +21,7 @@ export function Header({
   admin?: boolean;
   variant?: "default" | "admin";
 }) {
-  const accountHref = admin ? "/admin" : "/dashboard";
+  const accountHref = admin ? "/admin/overview" : "/dashboard";
 
   return (
     <header className={variant === "admin" ? "header header--admin" : "header"}>
@@ -44,7 +44,7 @@ export function Header({
             </>
           )}
           {signedIn && admin && (
-            <Link className="nav-link" href="/admin">
+            <Link className="nav-link" href="/admin/overview">
               <Shield size={16} aria-hidden />
               Admin
             </Link>
