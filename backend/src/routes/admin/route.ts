@@ -25,7 +25,14 @@ export async function GET(req: Request) {
       db.user.count(),
       db.user.count({ where: { role: ROLE_ADMIN } }),
       db.user.findMany({
-        select: { id: true, email: true, role: true, balanceUsd: true, createdAt: true },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+          balanceUsd: true,
+          requestCount: true,
+          createdAt: true,
+        },
         orderBy: [{ role: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * pageSize,
         take: pageSize,
@@ -41,6 +48,7 @@ export async function GET(req: Request) {
           email: u.email,
           role: normalizeRole(u.role),
           balanceUsd: usdFromDb(u.balanceUsd),
+          requestCount: u.requestCount,
           createdAt: u.createdAt.toISOString(),
         })),
         page,

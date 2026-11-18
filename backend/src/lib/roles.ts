@@ -21,6 +21,6 @@ export function roleLabel(role: unknown): string {
 }
 
 /** Where signed-in users land after login (admins always use /admin). */
-export function accountHomePath(role: unknown): "/admin" | "/dashboard" {
-  return isAdmin(role) ? "/admin" : "/dashboard";
+export function accountHomePath(role: unknown): "/admin/overview" | "/dashboard" {
+  return isAdmin(role) ? "/admin/overview" : "/dashboard";
 }
