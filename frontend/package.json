@@ -1,0 +1,19 @@
+{
+  "name": "@cardscanner/frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --require ../backend/scripts/load-env.cjs ../node_modules/next/dist/bin/next dev",
+    "build": "node --require ../backend/scripts/load-env.cjs ../node_modules/next/dist/bin/next build",
+    "start": "node --require ../backend/scripts/load-env.cjs ../node_modules/next/dist/bin/next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "next": "^15.1.0",
+    "next-auth": "^5.0.0-beta.25",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
