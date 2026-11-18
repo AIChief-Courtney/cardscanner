@@ -9,6 +9,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace frontend",
+    "dev:clean": "node backend/scripts/dev-clean.cjs",
+    "dev:fresh": "npm run dev:clean && npm run dev",
     "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace frontend",
     "typecheck": "npm run typecheck --workspaces",
