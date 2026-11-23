@@ -7,6 +7,9 @@ import {
   PDF_OUTPUTS,
   VIDEO_OUTPUTS,
 } from "@/lib/tools/category-outputs";
+import {
+  PDF_CONVERTER_OUTPUT_FORMATS,
+} from "@/lib/tools/pdf-converter-outputs";
 
 type Def = Partial<ToolRecord> & Pick<ToolRecord, "slug" | "label" | "menuGroup" | "template" | "kind">;
 
@@ -204,8 +207,8 @@ export const TOOL_DEFINITIONS: ToolRecord[] = [
   conv("pdf-converter", "PDF Converter", "pdf", {
     template: "category",
     accept: ".pdf,application/pdf",
-    outputFormats: [...PDF_OUTPUTS],
-    defaultOutput: "PDF",
+    outputFormats: [...PDF_CONVERTER_OUTPUT_FORMATS],
+    defaultOutput: "DOCX",
     tagline: "Convert to PDF format online, for free.",
     convertLabel: "Convert",
   }),

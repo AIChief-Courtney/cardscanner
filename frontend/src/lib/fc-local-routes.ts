@@ -29,6 +29,9 @@ const FC_PATH_ALIASES: Record<string, string> = {
 
 const SKIP_EXACT = new Set(["/robots.txt", "/favicon.ico"]);
 
+/** Customer URLs that must use full FC HTML (never FileDock [slug] UI). */
+export const FC_PROXY_TOOL_PATHS = new Set(["/pdf-converter", "/pdf-convert"]);
+
 function isFiledockApi(pathname: string): boolean {
   return FILEDOCK_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }

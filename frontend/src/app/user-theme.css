@@ -1767,6 +1767,124 @@
   margin-right: 8px;
 }
 
+/* FreeConvert-style output modal (pdf-converter fallback) */
+.fc-output-picker {
+  position: relative;
+  margin: 12px 0;
+}
+
+.fc-output-picker-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #c4b5fd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  background: #fff;
+  font-size: 0.9rem;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.fc-output-picker-value {
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+.fc-output-picker-chevron--open {
+  transform: rotate(180deg);
+}
+
+.fc-output-picker-panel {
+  position: absolute;
+  z-index: 120;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(420px, 95vw);
+  max-height: min(360px, 70vh);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 18px 48px rgb(15 23 42 / 16%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fc-output-picker--compact .fc-output-picker-panel {
+  right: auto;
+  left: 0;
+}
+
+.fc-output-picker-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.fc-output-picker-search input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.fc-output-picker-body {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  min-height: 200px;
+}
+
+.fc-output-picker-categories {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #f1f5f9;
+  padding: 8px 0;
+}
+
+.fc-output-picker-category {
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.fc-output-picker-category--active {
+  color: #312e81;
+  font-weight: 600;
+  background: #f5f3ff;
+}
+
+.fc-output-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  align-content: start;
+}
+
+.fc-output-picker-tile {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 6px;
+  font-size: 0.8rem;
+  background: #f1f5f9;
+  color: #334155;
+  cursor: pointer;
+}
+
+.fc-output-picker-tile--active {
+  background: #6366f1;
+  color: #fff;
+  font-weight: 600;
+}
+
 .output-format-chips {
   display: flex;
   flex-wrap: wrap;

@@ -11,6 +11,8 @@ import { demoConversionAdapter } from "@/lib/tools/demo-adapter";
 import { processImageBrowser } from "@/lib/tools/image-browser-adapter";
 import { saveDemoJob } from "@/lib/tools/job-history";
 import { OutputFormatPicker } from "@/components/user/output-format-picker";
+import { FcOutputFormatPicker } from "@/components/user/fc-output-format-picker";
+import { PDF_CONVERTER_OUTPUT_GROUPS } from "@/lib/tools/pdf-converter-outputs";
 
 type SourceTab = "device" | "dropbox" | "drive" | "onedrive" | "url";
 type DownloadItem = { id: string; name: string; url: string; size: number };
@@ -44,6 +46,7 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
   const showOutputPicker = !lockOutput && !!meta.outputFormats?.length;
   const validCount = queue.filter((f) => f.status === "valid").length;
   const isImageBrowser = record?.execution === "browser-local" && meta.kind === "image";
+  const useFcOutputPicker = meta.slug === "pdf-converter";
 
   const revokePreviews = useCallback((files: QueuedFile[]) => {
     for (const f of files) {
@@ -195,7 +198,15 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
         ))}
       </ul>
 
-      {showOutputPicker && meta.outputFormats && (
+      {showOutputPicker && meta.outputFormats && useFcOutputPicker && (
+        <FcOutputFormatPicker
+          groups={PDF_CONVERTER_OUTPUT_GROUPS}
+          value={outputFormat}
+          onChange={setOutputFormat}
+          label="Output"
+        />
+      )}
+      {showOutputPicker && meta.outputFormats && !useFcOutputPicker && (
         <OutputFormatPicker
           formats={meta.outputFormats}
           value={outputFormat}
@@ -299,7 +310,16 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
                 )}
                 <span className="tool-queue-name">{f.name}</span>
                 <span className="tool-queue-size">{formatBytes(f.size)}</span>
-                {showOutputPicker && f.status === "valid" && settingsScope === "one" && (
+                {showOutputPicker && f.status === "valid" && settingsScope === "one" && useFcOutputPicker && (
+                  <FcOutputFormatPicker
+                    groups={PDF_CONVERTER_OUTPUT_GROUPS}
+                    value={outputForFile(f.id)}
+                    onChange={(fmt) => setPerFileOutput((prev) => ({ ...prev, [f.id]: fmt }))}
+                    label="Output"
+                    compact
+                  />
+                )}
+                {showOutputPicker && f.status === "valid" && settingsScope === "one" && !useFcOutputPicker && (
                   <select
                     className="tool-queue-format"
                     aria-label={`Output for ${f.name}`}
@@ -313,8 +333,17 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
                     ))}
                   </select>
                 )}
-                {showOutputPicker && f.status === "valid" && settingsScope === "batch" && (
+                {showOutputPicker && f.status === "valid" && settingsScope === "batch" && !useFcOutputPicker && (
                   <span className="tool-queue-format-label">{outputFormat}</span>
+                )}
+                {showOutputPicker && f.status === "valid" && settingsScope === "batch" && useFcOutputPicker && (
+                  <FcOutputFormatPicker
+                    groups={PDF_CONVERTER_OUTPUT_GROUPS}
+                    value={outputFormat}
+                    onChange={setOutputFormat}
+                    label="Output"
+                    compact
+                  />
                 )}
                 <span className="tool-queue-status">
                   {f.status === "valid" ? <CheckCircle2 size={16} aria-hidden /> : <XCircle size={16} aria-hidden />}

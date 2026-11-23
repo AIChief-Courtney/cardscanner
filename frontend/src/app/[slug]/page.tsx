@@ -6,11 +6,18 @@ import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolPageRouter } from "@/components/user/tool-page-router";
 import { allToolRoutes, getToolByRoute } from "@/lib/tool-registry";
+import { FC_PROXY_TOOL_PATHS } from "@/lib/fc-local-routes";
 
 export const dynamic = "force-dynamic";
 
+const FC_PROXY_SLUGS = new Set(
+  [...FC_PROXY_TOOL_PATHS].map((p) => p.replace(/^\//, "")),
+);
+
 export function generateStaticParams() {
-  return allToolRoutes().map((slug) => ({ slug }));
+  return allToolRoutes()
+    .filter((slug) => !FC_PROXY_SLUGS.has(slug))
+    .map((slug) => ({ slug }));
 }
 
 type Props = { params: Promise<{ slug: string }> };
@@ -28,6 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ToolRoutePage({ params }: Props) {
   const { slug } = await params;
+  if (FC_PROXY_SLUGS.has(slug)) notFound();
   const tool = getToolByRoute(slug);
   if (!tool) notFound();
 
