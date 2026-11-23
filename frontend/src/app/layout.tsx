@@ -2,21 +2,20 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Card Scanner | Convert & OCR", template: "%s | Card Scanner" },
-  description:
-    "Convert images, PDFs, and cards with Card Scanner. Sign in for your dashboard, uploads, and profile.",
-  applicationName: "Card Scanner",
+  title: { default: "FileDock | Convert, compress, and edit files", template: "%s | FileDock" },
+  description: "FileDock is a demo-first conversion platform with honest adapters, pricing, and account shells.",
+  applicationName: "FileDock",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Card Scanner | Convert & OCR",
-    description: "Tools mega menu, clean dashboard, and secure sign-in for your document workspace.",
-    siteName: "Card Scanner",
+    title: "FileDock | Convert, compress, and edit files",
+    description: "Guest-friendly workspace, typed tool registry, and labeled demo outputs.",
+    siteName: "FileDock",
     type: "website",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1a73e8",
+  themeColor: "#0d9488",
   width: "device-width",
   initialScale: 1,
 };

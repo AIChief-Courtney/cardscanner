@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { RefreshCw, Search, Shield } from "lucide-react";
+import { Layers, Shield } from "lucide-react";
 import { ProductNavBar } from "@/components/user/product-nav-bar";
+import { ToolSearchTrigger } from "@/components/user/tool-search-dialog";
 
 export function Brand({ href = "/" }: { href?: string }) {
   return (
-    <Link href={href} className="brand brand--fc" aria-label="Card Scanner home">
+    <Link href={href} className="brand brand--fc" aria-label="FileDock home">
       <span className="brand-icon brand-icon--fc" aria-hidden>
-        <RefreshCw size={22} strokeWidth={2.25} />
+        <Layers size={22} strokeWidth={2.25} />
       </span>
       <span className="brand-word-fc">
-        Card<span className="brand-word-fc-accent">Scanner</span>
+        File<span className="brand-word-fc-accent">Dock</span>
       </span>
     </Link>
   );
@@ -28,10 +29,10 @@ export function Header({
   variant?: "default" | "admin";
   tone?: "default" | "dashboard";
 }) {
-  const accountHref = admin ? "/admin/overview" : signedIn ? "/profile" : "/signin";
+  const accountHref = admin ? "/admin/overview" : signedIn ? "/account/profile" : "/signin";
   const signupHref = signedIn ? "/dashboard" : "/signup";
-  const plansHref = signedIn ? "/dashboard#plans" : "/#plans";
-  const brandHref = signedIn && !admin ? "/dashboard" : "/";
+  const plansHref = "/pricing";
+  const brandHref = "/";
 
   if (variant === "admin") {
     return (
@@ -62,9 +63,7 @@ export function Header({
         </nav>
 
         <div className="header-actions header-actions--fc">
-          <button type="button" className="fc-search-btn" aria-label="Search tools">
-            <Search size={18} aria-hidden />
-          </button>
+          <ToolSearchTrigger />
           {!signedIn ? (
             <>
               <Link className="fc-login-link" href="/signin">

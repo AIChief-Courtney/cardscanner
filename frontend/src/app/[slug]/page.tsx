@@ -4,9 +4,7 @@ import { currentUser } from "@backend/lib/access";
 import { isAdmin } from "@backend/lib/roles";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
-import { ToolConverterPage } from "@/components/user/tool-converter-page";
-import { ToolFreeConvertPage } from "@/components/user/tool-freeconvert-page";
-import { freeConvertPath } from "@/lib/freeconvert-url";
+import { ToolPageRouter } from "@/components/user/tool-page-router";
 import { allToolRoutes, getToolByRoute } from "@/lib/tool-registry";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: tool.h1,
     description: tool.tagline,
-    openGraph: { title: `${tool.h1} | Card Scanner`, description: tool.tagline },
+    openGraph: { title: `${tool.h1} | FileDock`, description: tool.tagline },
   };
 }
 
@@ -36,13 +34,12 @@ export default async function ToolRoutePage({ params }: Props) {
   const user = await currentUser();
   const signedIn = !!user;
   const admin = user ? isAdmin(user.role) : false;
-  const fcEmbed = !!freeConvertPath(tool.slug, tool.kind);
 
   return (
     <>
-      {!fcEmbed && <Header signedIn={signedIn} admin={admin} />}
-      {fcEmbed ? <ToolFreeConvertPage meta={tool} /> : <ToolConverterPage meta={tool} />}
-      {!fcEmbed && <SiteFooter signedIn={signedIn} admin={admin} />}
+      <Header signedIn={signedIn} admin={admin} />
+      <ToolPageRouter meta={tool} />
+      <SiteFooter signedIn={signedIn} admin={admin} />
     </>
   );
 }

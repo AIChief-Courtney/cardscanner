@@ -12,16 +12,22 @@ export function SiteFooter({
       <div className="site-footer-inner">
         <p className="site-footer-tagline">
           <span className="text-gradient text-gradient--blue" style={{ fontWeight: 700 }}>
-            Card Scanner
+            FileDock
           </span>{" "}
-          — {signedIn ? "Convert, scan, and manage files from your dashboard." : "Browse tools as a guest — sign in for uploads and your workspace."}
+          — {signedIn ? "Tasks, jobs, and billing in your account." : "Guest demos in the browser — sign in for history."}
         </p>
         <nav className="site-footer-nav" aria-label="Footer">
+          <Link href="/convert">Convert</Link>
+          <Link href="/compress">Compress</Link>
+          <Link href="/tools">Tools</Link>
+          <Link href="/pricing">Pricing</Link>
+          <Link href="/faq">FAQ</Link>
+          <Link href="/privacy">Privacy (draft)</Link>
           {!signedIn && <Link href="/">Home</Link>}
           {signedIn && !admin && (
             <>
               <Link href="/dashboard">Dashboard</Link>
-              <Link href="/profile">Account</Link>
+              <Link href="/account/profile">Account</Link>
             </>
           )}
           {signedIn && admin && <Link href="/admin/overview">Admin</Link>}
@@ -32,7 +38,7 @@ export function SiteFooter({
             </>
           )}
         </nav>
-        <p className="site-footer-copy">© {new Date().getFullYear()} Card Scanner. All rights reserved.</p>
+        <p className="site-footer-copy">© {new Date().getFullYear()} FileDock. All rights reserved.</p>
       </div>
     </footer>
   );

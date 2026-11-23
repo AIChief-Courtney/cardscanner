@@ -7,7 +7,7 @@ export function ToolConverterPage({ meta }: { meta: ToolPageMeta }) {
   const content = buildToolPageContent(meta);
 
   return (
-    <main id="main-content" className="tool-page tool-page--fc tool-page--simple">
+    <main id="main-content" className="tool-page tool-page--filedock">
       <header className="tool-page-hero">
         <h1>{meta.h1}</h1>
         <p className="tool-page-tagline">{meta.tagline}</p>
