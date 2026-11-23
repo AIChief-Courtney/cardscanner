@@ -206,7 +206,8 @@ export const TOOL_DEFINITIONS: ToolRecord[] = [
     accept: ".pdf,application/pdf",
     outputFormats: [...PDF_OUTPUTS],
     defaultOutput: "PDF",
-    tagline: "Convert PDFs online, for free.",
+    tagline: "Convert to PDF format online, for free.",
+    convertLabel: "Convert",
   }),
   conv("document-converter", "Document Converter", "word", {
     template: "category",

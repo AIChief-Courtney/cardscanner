@@ -536,6 +536,17 @@
   background: #fff;
 }
 
+/* Full-page FreeConvert parity routes (e.g. /pdf-converter) */
+.site-content:has(.fc-tool-route) {
+  max-width: none;
+  padding: 0;
+}
+
+.site-body:has(.fc-tool-route) .ambient-bg,
+.site-body:has(.fc-tool-route) .skip-link {
+  display: none;
+}
+
 .fc-api-panel {
   text-align: center;
   padding: 32px 24px;
