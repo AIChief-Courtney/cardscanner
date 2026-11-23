@@ -36,7 +36,7 @@ export const PDF_CONVERTER_OUTPUT_GROUPS: OutputFormatGroup[] = [
   {
     id: "report",
     label: "Report",
-    formats: ["CSV", "XLS", "XLSX", "PDF"],
+    formats: ["CSV", "TSV", "ODS"],
   },
 ];
 

@@ -30,7 +30,11 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
   const [url, setUrl] = useState("");
   const [dragging, setDragging] = useState(false);
   const [queue, setQueue] = useState<QueuedFile[]>([]);
-  const [outputFormat, setOutputFormat] = useState(meta.defaultOutput ?? meta.outputFormats?.[0] ?? "");
+  const [outputFormat, setOutputFormat] = useState(
+    meta.slug === "pdf-converter"
+      ? (meta.defaultOutput ?? "DOCX")
+      : (meta.defaultOutput ?? meta.outputFormats?.[0] ?? ""),
+  );
   const [perFileOutput, setPerFileOutput] = useState<Record<string, string>>({});
   const [jobStatus, setJobStatus] = useState<JobStatus>("ready");
   const [progress, setProgress] = useState(0);
