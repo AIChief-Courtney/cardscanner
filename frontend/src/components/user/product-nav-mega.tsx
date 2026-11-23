@@ -65,10 +65,12 @@ export function ProductNavMega({
   }, [open, close]);
 
   return (
+  <>
+    {open ? <button type="button" className="tools-mega-backdrop" aria-label="Close menu" onClick={close} /> : null}
     <div className={`tools-mega tools-mega--${menu} ${open ? "tools-mega--open" : ""}`} ref={rootRef}>
       <button
         type="button"
-        className="tools-mega-trigger nav-mega-trigger"
+        className="fc-nav-link fc-nav-link--mega nav-mega-trigger"
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => onOpenChange(!open)}
@@ -105,5 +107,6 @@ export function ProductNavMega({
         </div>
       </div>
     </div>
+  </>
   );
 }
