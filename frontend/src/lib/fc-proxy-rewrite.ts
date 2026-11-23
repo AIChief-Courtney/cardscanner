@@ -2,7 +2,7 @@ import { FREECONVERT_ORIGIN } from "@/lib/freeconvert-url";
 
 const FC_HOST = FREECONVERT_ORIGIN.replace(/^https?:\/\//, "");
 
-/** Keep proxied FC navigation and assets on /fc/* when rendered under localhost. */
+/** Rewrite FC absolute and root-relative URLs to same-origin paths (middleware → /fc/*). */
 export function rewriteFcUrls(body: string, contentType: string | null): string {
   const type = contentType?.toLowerCase() ?? "";
   const isHtml = type.includes("text/html");
@@ -11,21 +11,21 @@ export function rewriteFcUrls(body: string, contentType: string | null): string 
 
   let out = body;
 
-  out = out.replace(new RegExp(`https?://${FC_HOST}/`, "gi"), "/fc/");
-  out = out.replace(new RegExp(`//${FC_HOST}/`, "gi"), "/fc/");
+  out = out.replace(new RegExp(`https?://${FC_HOST}/`, "gi"), "/");
+  out = out.replace(new RegExp(`//${FC_HOST}/`, "gi"), "/");
 
   const attrs = isHtml ? ["href", "src", "action"] : [];
   for (const attr of attrs) {
     out = out.replace(
-      new RegExp(`${attr}=("|')/(?!fc/)([^"']*)("|')`, "gi"),
-      (_m, q1: string, path: string, q2: string) => `${attr}=${q1}/fc/${path}${q2}`,
+      new RegExp(`${attr}=("|')/([^"']*)("|')`, "gi"),
+      (_m, q1: string, path: string, q2: string) => `${attr}=${q1}/${path}${q2}`,
     );
   }
 
   if (isCss) {
-    out = out.replace(/url\(\s*\/(?!fc\/)/gi, "url(/fc/");
-    out = out.replace(/url\(\s*("|')\/(?!fc\/)/gi, 'url($1/fc/');
+    out = out.replace(/url\(\s*\//gi, "url(/");
+    out = out.replace(/url\(\s*("|')\//gi, 'url($1/');
   }
 
-  return out.replace(/\/fc\/fc\//g, "/fc/");
+  return out;
 }
