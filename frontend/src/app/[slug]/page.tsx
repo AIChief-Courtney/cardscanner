@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { currentUser } from "@backend/lib/access";
+import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
@@ -31,7 +31,7 @@ export default async function ToolRoutePage({ params }: Props) {
   const tool = getToolByRoute(slug);
   if (!tool) notFound();
 
-  const user = await currentUser();
+  const user = await safeHeaderUser();
   const signedIn = !!user;
   const admin = user ? isAdmin(user.role) : false;
 

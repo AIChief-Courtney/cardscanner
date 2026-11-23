@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolsCatalog } from "@/components/user/tools-catalog";
-import { currentUser } from "@backend/lib/access";
+import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 import { ArrowRight, FileStack, Sparkles, Zap } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const user = await currentUser();
+  const user = await safeHeaderUser();
   const signedIn = !!user;
   const admin = user ? isAdmin(user.role) : false;
 

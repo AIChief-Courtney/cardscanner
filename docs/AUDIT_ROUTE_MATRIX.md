@@ -18,8 +18,25 @@ Columns: Reference URL | Local URL | Page type | Status | Notes
 | Advanced settings | OK (image quality) |
 | Related tools | OK when `relatedToolsFor` entry exists |
 
+## Category landings (template verified via registry)
+
+| Local | Status | Notes |
+|-------|--------|-------|
+| /video-converter | smoke | outputFormats + shared workspace |
+| /audio-converter | smoke | outputFormats + demo |
+| /image-converter | **verified** | browser-local export |
+| /pdf-converter | smoke | outputFormats + demo |
+| /document-converter | smoke | related tools added |
+
+## Platform / blocked
+
+| Item | Status |
+|------|--------|
+| `@auth.js` vendor chunk on LAN dev | **fixed** — clear `.next`, `serverExternalPackages`, restart dev |
+| HEIC / RAW / server codecs | blocked — demo message |
+| Cloud pickers | blocked — labeled |
+| ImageResizer / ProPDF slugs | external links |
+
 ## Next routes (audit queued)
 
-Home, `/video-converter`, `/pdf-converter`, `/pdf-to-word`, compressors, PDF organize/trim, pricing, sign-in, account shells, API landings.
-
-Mark **external** for ImageResizer/ProPDF slugs. Mark **unverified** until browser pass completed.
+Format pairs, compressors, PDF tools (merge/split/organize), calculators, pricing/checkout, sign-in, account shells, API landings, homepage.
