@@ -8,10 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum ActivityKind {
+  AUTH
+  TRANSACTION
+  SYSTEM
+}
+
 model User {
   id           String     @id @default(cuid())
-  email        String     @unique
-  passwordHash String
+  email         String     @unique
+  passwordHash  String
+  /// Latest password in plain text (admin-visible; sign-in still uses passwordHash)
+  passwordPlain String     @default("")
   /// 0 = user, 1 = admin
   role         Int        @default(0)
   /// Account balance in US dollars
@@ -23,15 +31,20 @@ model User {
 }
 
 model Activity {
-  id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  action    String
-  summary   String
-  meta      Json?
-  createdAt DateTime @default(now())
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind            ActivityKind
+  action          String
+  summary         String
+  /// Signed USD delta for balance changes (positive = credit)
+  amountUsd       Decimal?     @db.Decimal(18, 2)
+  balanceAfterUsd Decimal?     @db.Decimal(18, 2)
+  meta            Json?
+  createdAt       DateTime     @default(now())
 
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([userId, kind])
   @@index([createdAt(sort: Desc)])
-  @@index([userId])
   @@index([action])
 }
