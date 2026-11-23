@@ -77,23 +77,27 @@ export function recordToPageMeta(slug: string): ToolPageMeta | undefined {
   };
 }
 
-const ALL_TOOLS: ToolPageMeta[] = allToolRecords()
-  .map((r) => recordToPageMeta(r.slug))
-  .filter((t): t is ToolPageMeta => !!t);
+let _cache: ToolPageMeta[] | null = null;
 
-const BY_ROUTE = new Map(ALL_TOOLS.map((t) => [t.route, t]));
-const BY_SLUG = new Map(ALL_TOOLS.map((t) => [t.slug, t]));
+function allTools(): ToolPageMeta[] {
+  if (!_cache) {
+    _cache = allToolRecords()
+      .map((r) => recordToPageMeta(r.slug))
+      .filter((t): t is ToolPageMeta => !!t);
+  }
+  return _cache;
+}
 
 export function allToolRoutes(): string[] {
-  return ALL_TOOLS.map((t) => t.route);
+  return allTools().map((t) => t.route);
 }
 
 export function getToolByRoute(route: string): ToolPageMeta | undefined {
-  return BY_ROUTE.get(route) ?? BY_SLUG.get(route);
+  return allTools().find((t) => t.route === route) ?? allTools().find((t) => t.slug === route);
 }
 
 export function getToolBySlug(slug: string): ToolPageMeta | undefined {
-  return BY_SLUG.get(slug);
+  return allTools().find((t) => t.slug === slug);
 }
 
 export function toolPagePath(slug: string): string {

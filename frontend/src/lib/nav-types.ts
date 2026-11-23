@@ -1,0 +1,1 @@
+export type NavMenuKey = "convert" | "compress" | "tools" | "api";

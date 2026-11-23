@@ -1,4 +1,4 @@
-import type { NavMenuKey } from "@/lib/nav-catalog";
+import type { NavMenuKey } from "@/lib/nav-types";
 import type { UserTool } from "@/lib/user-tools";
 import { REFERENCE_ORIGIN, TOOL_DEFINITIONS } from "@/lib/tools/registry-data";
 import type { ToolRecord } from "@/lib/tools/types";

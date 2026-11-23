@@ -1,7 +1,8 @@
 import type { ToolKind, UserTool } from "@/lib/user-tools";
+import type { NavMenuKey } from "@/lib/nav-types";
 import { NAV_TOOL_SLUGS, getToolRecord, recordToUserTool } from "@/lib/tools/registry";
 
-export type NavMenuKey = "convert" | "compress" | "tools" | "api";
+export type { NavMenuKey };
 
 export type NavColumn = {
   id: string;
