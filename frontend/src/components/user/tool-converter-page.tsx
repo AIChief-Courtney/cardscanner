@@ -8,10 +8,14 @@ import { ToolWorkspace } from "@/components/user/tool-workspace";
 export function ToolConverterPage({ meta }: { meta: ToolPageMeta }) {
   const content = buildToolPageContent(meta);
   const related = relatedToolsFor(meta.slug);
+  const breadcrumbTrail =
+    meta.slug === "pdf-converter"
+      ? [{ href: "/document-converter", label: "Document Converter" }]
+      : undefined;
 
   return (
     <main id="main-content" className="tool-page tool-page--filedock">
-      <ToolBreadcrumb label={meta.h1} />
+      <ToolBreadcrumb label={meta.h1} trail={breadcrumbTrail} />
       <header className="tool-page-hero">
         <h1>{meta.h1}</h1>
         <p className="tool-page-tagline">{meta.tagline}</p>

@@ -76,9 +76,13 @@ export function FcOutputFormatPicker({ groups, value, onChange, label = "Output"
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
     }
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKey);
+    // Defer so the same click that opened the panel does not close it on mousedown.
+    const attachTimer = window.setTimeout(() => {
+      document.addEventListener("mousedown", onPointerDown);
+      document.addEventListener("keydown", onKey);
+    }, 0);
     return () => {
+      window.clearTimeout(attachTimer);
       document.removeEventListener("mousedown", onPointerDown);
       document.removeEventListener("keydown", onKey);
     };
@@ -153,6 +157,7 @@ export function FcOutputFormatPicker({ groups, value, onChange, label = "Output"
         className="fc-output-picker-trigger"
         aria-expanded={open}
         aria-controls={panelId}
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={() => setOpen((v) => !v)}
       >
         <span className="fc-output-picker-label">{label}:</span>

@@ -14,6 +14,8 @@ const SKIP_PREFIXES = [
   "/security",
   "/fc",
   "/fixtures",
+  "/pdf-convert",
+  "/pdf-converter",
 ];
 
 /** FC has no directory pages for these — mega menus live on `/`. */
@@ -22,15 +24,10 @@ export const FC_HEADER_REDIRECTS = new Set(["/convert", "/compress", "/tools"]);
 /** FileDock Next.js API routes only — all other `/api/*` is proxied to FC (uploads/jobs). */
 const FILEDOCK_API_PREFIXES = ["/api/auth", "/api/admin", "/api/profile", "/api/register"];
 
-/** Local slugs that alias to a different FC tool path. */
-const FC_PATH_ALIASES: Record<string, string> = {
-  "/pdf-convert": "/pdf-converter",
-};
-
 const SKIP_EXACT = new Set(["/robots.txt", "/favicon.ico"]);
 
-/** Customer URLs that must use full FC HTML (never FileDock [slug] UI). */
-export const FC_PROXY_TOOL_PATHS = new Set(["/pdf-converter", "/pdf-convert"]);
+/** Reserved for future full-FC embed routes (pdf-convert uses local workspace + FC output UI). */
+export const FC_PROXY_TOOL_PATHS = new Set<string>();
 
 function isFiledockApi(pathname: string): boolean {
   return FILEDOCK_API_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
@@ -45,7 +42,6 @@ export function shouldServeLocalApp(pathname: string): boolean {
 }
 
 export function fcProxyRewritePath(pathname: string): string {
-  const aliased = FC_PATH_ALIASES[pathname] ?? pathname;
-  if (aliased === "/") return "/fc";
-  return `/fc${aliased}`;
+  if (pathname === "/") return "/fc";
+  return `/fc${pathname}`;
 }
