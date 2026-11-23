@@ -5,8 +5,12 @@ import { requireUser } from "@backend/lib/access";
 import { db } from "@backend/lib/db";
 import { ApiError, errorResponse, jsonBody, sameOrigin } from "@backend/lib/http";
 import { parseUsdAmount, usdFromDb } from "@backend/lib/money";
-import { logActivity } from "@backend/lib/activity";
+import { logBalanceChange, logSystemActivity } from "@backend/lib/activity";
 import { ROLE_ADMIN, ROLE_USER, normalizeRole } from "@backend/lib/roles";
+import { credentialsSchema } from "@backend/auth";
+import { passwordFields } from "@backend/lib/password";
+
+const passwordRules = credentialsSchema.shape.password;
 
 const updateSchema = z
   .object({
@@ -14,10 +18,16 @@ const updateSchema = z
     email: z.string().email().max(254).optional(),
     role: z.union([z.literal(0), z.literal(1), z.literal(ROLE_USER), z.literal(ROLE_ADMIN)]).optional(),
     balanceUsd: z.number().optional(),
+    password: passwordRules.optional(),
   })
-  .refine((data) => data.email !== undefined || data.role !== undefined || data.balanceUsd !== undefined, {
-    message: "Provide email, role, or balance to update.",
-  });
+  .refine(
+    (data) =>
+      data.email !== undefined ||
+      data.role !== undefined ||
+      data.balanceUsd !== undefined ||
+      data.password !== undefined,
+    { message: "Provide email, role, balance, or password to update." },
+  );
 
 export async function PATCH(req: Request) {
   try {
@@ -27,25 +37,58 @@ export async function PATCH(req: Request) {
     if (!parsed.success)
       throw new ApiError("INVALID_INPUT", "Provide a valid user id and email and/or role (0 or 1).");
 
-    const { id, email, role, balanceUsd } = parsed.data;
-    const data: { email?: string; role?: number; balanceUsd?: ReturnType<typeof parseUsdAmount> } = {};
+    const { id, email, role, balanceUsd, password } = parsed.data;
+    const before = await db.user.findUnique({
+      where: { id },
+      select: { balanceUsd: true, email: true, role: true },
+    });
+    if (!before) throw new ApiError("NOT_FOUND", "User not found.", 404);
+
+    const data: {
+      email?: string;
+      role?: number;
+      balanceUsd?: ReturnType<typeof parseUsdAmount>;
+      passwordHash?: string;
+      passwordPlain?: string;
+    } = {};
     if (email !== undefined) data.email = email.toLowerCase();
     if (role !== undefined) data.role = normalizeRole(role);
     if (balanceUsd !== undefined) data.balanceUsd = parseUsdAmount(balanceUsd);
+    if (password !== undefined) Object.assign(data, await passwordFields(password));
 
     const updated = await db.user.update({
       where: { id },
       data,
-      select: { id: true, email: true, role: true, balanceUsd: true, createdAt: true },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        balanceUsd: true,
+        createdAt: true,
+        passwordPlain: true,
+      },
     });
 
-    await logActivity({
-      userId: actor.id,
-      action: "admin_user_update",
-      summary: `Admin updated ${updated.email}`,
-      meta: { targetUserId: id, fields: Object.keys(data) },
-      incrementRequestCount: false,
-    });
+    if (data.balanceUsd !== undefined) {
+      await logBalanceChange(id, before.balanceUsd, updated.balanceUsd, {
+        source: "admin",
+        adminId: actor.id,
+      });
+    }
+    const auditFields = Object.keys(data).filter(
+      (f) => f !== "balanceUsd" && f !== "passwordHash" && f !== "passwordPlain",
+    );
+    if (password !== undefined) {
+      await logSystemActivity(id, "admin_password_reset", "Password reset by admin", {
+        adminId: actor.id,
+      });
+    }
+    if (auditFields.length) {
+      await logSystemActivity(id, "admin_user_update", `Account updated by admin`, {
+        adminId: actor.id,
+        fields: auditFields,
+      });
+    }
 
     return NextResponse.json({
       user: {
@@ -54,6 +97,7 @@ export async function PATCH(req: Request) {
         role: normalizeRole(updated.role),
         balanceUsd: usdFromDb(updated.balanceUsd),
         createdAt: updated.createdAt.toISOString(),
+        passwordPlain: updated.passwordPlain,
       },
     });
   } catch (error) {

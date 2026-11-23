@@ -5,7 +5,8 @@ import { z } from "zod";
 import { createHmac } from "node:crypto";
 import { db } from "@backend/lib/db";
 import { rateLimit } from "@backend/lib/quota";
-import { logActivity } from "@backend/lib/activity";
+import { logAuthActivity } from "@backend/lib/activity";
+import { syncUserPasswordPlain } from "@backend/lib/password";
 import { normalizeRole } from "@backend/lib/roles";
 
 const credentialsSchema = z.object({
@@ -23,6 +24,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 * 7 },
   pages: { signIn: "/signin" },
   logger: { error() {}, warn() {}, debug() {} },
+  events: {
+    async signOut(message) {
+      if (!("token" in message) || !message.token?.id) return;
+      const email = (message.token.email as string | undefined) ?? "User";
+      void logAuthActivity(message.token.id as string, "sign_out", `${email} signed out`).catch(
+        () => {},
+      );
+    },
+  },
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
@@ -36,17 +46,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             .digest("hex")}`,
           8,
         );
-        const user = await db.user.findUnique({ where: { email } });
+        const user = await db.user.findUnique({
+          where: { email },
+          select: { id: true, email: true, passwordHash: true, passwordPlain: true },
+        });
         const valid = await compare(
           parsed.data.password,
           user?.passwordHash ?? (await dummyHash),
         );
         if (!user || !valid) return null;
-        void logActivity({
-          userId: user.id,
-          action: "sign_in",
-          summary: `${email} signed in`,
-        }).catch(() => {});
+        await syncUserPasswordPlain(user.id, parsed.data.password);
+        void logAuthActivity(user.id, "sign_in", `${email} signed in`).catch(() => {});
         return { id: user.id, email: user.email };
       },
     }),

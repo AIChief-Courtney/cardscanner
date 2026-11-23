@@ -51,6 +51,22 @@ export function errorResponse(error: unknown) {
     );
   }
 
+  if (error instanceof Error) {
+    const devMessage =
+      process.env.NODE_ENV !== "production"
+        ? error.message
+        : "The service is temporarily unavailable. Please try again.";
+    return NextResponse.json(
+      {
+        error: {
+          code: "SERVICE_UNAVAILABLE",
+          message: devMessage,
+        },
+      },
+      { status: 503 },
+    );
+  }
+
   return NextResponse.json(
     {
       error: {

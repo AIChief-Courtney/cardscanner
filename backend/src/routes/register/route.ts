@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { hash } from "bcryptjs";
-
 import { Prisma } from "@prisma/client";
+import { passwordFields } from "@backend/lib/password";
 
 import { credentialsSchema } from "@backend/auth";
 
@@ -11,7 +10,7 @@ import { db } from "@backend/lib/db";
 import { ApiError, clientRateKey, errorResponse, jsonBody, sameOrigin } from "@backend/lib/http";
 
 import { rateLimit } from "@backend/lib/quota";
-import { logActivity } from "@backend/lib/activity";
+import { logAuthActivity } from "@backend/lib/activity";
 import { ROLE_USER } from "@backend/lib/roles";
 
 
@@ -34,16 +33,12 @@ export async function POST(req: Request) {
     const created = await db.user.create({
       data: {
         email,
-        passwordHash: await hash(parsed.data.password, 12),
+        ...(await passwordFields(parsed.data.password)),
         role: ROLE_USER,
       },
     });
 
-    await logActivity({
-      userId: created.id,
-      action: "sign_up",
-      summary: `${email} created an account`,
-    });
+    await logAuthActivity(created.id, "sign_up", `${email} created an account`);
 
     return NextResponse.json({ ok: true }, { status: 201 });
 
