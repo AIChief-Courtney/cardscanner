@@ -5,6 +5,7 @@ import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 
 export const metadata = { title: "Pricing", description: "FileDock plans (demo checkout)." };
+export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
   const user = await safeHeaderUser();

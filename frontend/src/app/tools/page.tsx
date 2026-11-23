@@ -5,6 +5,7 @@ import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 
 export const metadata = { title: "Tools", description: "Media editors, PDF utilities, and partner links." };
+export const dynamic = "force-dynamic";
 
 export default async function ToolsDirectoryPage() {
   const user = await safeHeaderUser();

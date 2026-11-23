@@ -5,6 +5,7 @@ import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 
 export const metadata = { title: "Compress", description: "Video, audio, image, PDF, and GIF compressors." };
+export const dynamic = "force-dynamic";
 
 export default async function CompressDirectoryPage() {
   const user = await safeHeaderUser();

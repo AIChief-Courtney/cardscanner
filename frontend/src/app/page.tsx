@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolsCatalog } from "@/components/user/tools-catalog";
+import { HomeWorkspace } from "@/components/user/home-workspace";
+import { recordToPageMeta } from "@/lib/tool-registry";
 import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 import { ArrowRight, FileStack, Sparkles, Zap } from "lucide-react";
@@ -12,6 +14,7 @@ export default async function Home() {
   const user = await safeHeaderUser();
   const signedIn = !!user;
   const admin = user ? isAdmin(user.role) : false;
+  const imageMeta = recordToPageMeta("image-converter");
 
   return (
     <>
@@ -39,6 +42,8 @@ export default async function Home() {
           </div>
           <HeroActions signedIn={signedIn} />
         </section>
+
+        {imageMeta ? <HomeWorkspace meta={imageMeta} /> : null}
 
         <section className="landing-upload-preview panel" aria-labelledby="popular-title">
           <h2 id="popular-title">Popular tools</h2>

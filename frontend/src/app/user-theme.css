@@ -1871,3 +1871,56 @@
     grid-column: 1 / -1;
   }
 }
+
+.home-workspace {
+  max-width: min(920px, 100%);
+  margin: 32px auto;
+  padding: 24px clamp(16px, 4vw, 32px);
+  text-align: left;
+}
+
+.home-workspace-lead {
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.pdf-merge-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+}
+
+.pdf-merge-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+}
+
+.pdf-merge-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.pdf-split-options fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pdf-split-options label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 280px;
+}
+
+.page-main.user-landing {
+  overflow-x: hidden;
+}

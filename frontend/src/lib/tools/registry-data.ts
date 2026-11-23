@@ -49,12 +49,74 @@ function def(
   };
 }
 
+const SLUG_OUTPUT: Record<string, string> = {
+  word: "DOCX",
+  docx: "DOCX",
+  pdf: "PDF",
+  jpg: "JPG",
+  jpeg: "JPG",
+  png: "PNG",
+  webp: "WEBP",
+  gif: "GIF",
+  mp3: "MP3",
+  mp4: "MP4",
+  epub: "EPUB",
+  mobi: "MOBI",
+  ogg: "OGG",
+  svg: "SVG",
+  zip: "ZIP",
+};
+
+const SLUG_ACCEPT: Record<string, { accept: string; inputHints: string }> = {
+  pdf: { accept: ".pdf,application/pdf", inputHints: "PDF" },
+  word: { accept: ".pdf,application/pdf", inputHints: "PDF" },
+  jpg: { accept: "image/*", inputHints: "JPG, PNG, JPEG" },
+  jpeg: { accept: "image/*", inputHints: "JPG, PNG, JPEG" },
+  png: { accept: "image/*", inputHints: "PNG, JPG, WEBP" },
+  webp: { accept: "image/*", inputHints: "WEBP, PNG" },
+  heic: { accept: "image/*", inputHints: "HEIC, JPG" },
+  mp4: { accept: "video/*", inputHints: "MP4, MOV, WEBM" },
+  mov: { accept: "video/*", inputHints: "MOV, MP4" },
+  mp3: { accept: "audio/*", inputHints: "MP3, WAV" },
+  epub: { accept: ".epub,application/epub+zip", inputHints: "EPUB" },
+  gif: { accept: "image/*,video/*", inputHints: "GIF, MP4, WEBP" },
+  jfif: { accept: "image/*", inputHints: "JFIF, JPG" },
+  rar: { accept: ".rar", inputHints: "RAR archive" },
+  apng: { accept: "image/*", inputHints: "APNG, PNG" },
+  webm: { accept: "video/*", inputHints: "WEBM, MP4" },
+  avi: { accept: "video/*", inputHints: "AVI, MOV" },
+  docx: { accept: ".doc,.docx,application/msword", inputHints: "DOC, DOCX" },
+};
+
+function pairHints(slug: string): Partial<ToolRecord> {
+  if (!slug.includes("-to-")) return {};
+  const [from, to] = slug.split("-to-");
+  const defaultOutput = SLUG_OUTPUT[to] ?? to.toUpperCase();
+  const fromHint = SLUG_ACCEPT[from];
+  return {
+    defaultOutput,
+    outputFormats: [defaultOutput],
+    ...(fromHint ?? {}),
+  };
+}
+
 function conv(slug: string, label: string, kind: ToolKind = "image", extra?: Partial<ToolRecord>) {
-  return def({ slug, label, menuGroup: "convert", template: "conversion", kind, ...extra });
+  const auto = extra?.defaultOutput ? {} : pairHints(slug);
+  return def({ slug, label, menuGroup: "convert", template: "conversion", kind, ...auto, ...extra });
 }
 
 function cmp(slug: string, label: string, kind: ToolKind = "image", extra?: Partial<ToolRecord>) {
-  return def({ slug, label, menuGroup: "compress", template: "compressor", kind, ...extra });
+  const accept =
+    kind === "pdf"
+      ? { accept: ".pdf,application/pdf", inputHints: "PDF" }
+      : kind === "video"
+        ? { accept: "video/*", inputHints: "MP4, MOV, WEBM" }
+        : kind === "audio"
+          ? { accept: "audio/*", inputHints: "MP3, WAV" }
+          : kind === "gif"
+            ? { accept: "image/gif,video/*", inputHints: "GIF, MP4" }
+            : { accept: "image/*", inputHints: "JPG, PNG, WEBP" };
+  return def({ slug, label, menuGroup: "compress", template: "compressor", kind, ...accept, ...extra });
 }
 
 function tool(slug: string, label: string, template: ToolRecord["template"], kind: ToolKind, extra?: Partial<ToolRecord>) {
@@ -169,12 +231,7 @@ export const TOOL_DEFINITIONS: ToolRecord[] = [
   conv("heic-to-jpg", "HEIC to JPG", "image"),
   conv("heic-to-png", "HEIC to PNG", "image"),
   conv("webp-to-jpg", "WEBP to JPG", "image"),
-  conv("pdf-to-word", "PDF to Word", "word", {
-    inputHints: "PDF",
-    accept: ".pdf,application/pdf",
-    defaultOutput: "DOCX",
-    outputFormats: ["DOCX"],
-  }),
+  conv("pdf-to-word", "PDF to Word", "word", { defaultOutput: "DOCX", outputFormats: ["DOCX"] }),
   conv("pdf-to-jpg", "PDF to JPG", "image"),
   conv("pdf-to-epub", "PDF to EPUB", "pdf"),
   conv("epub-to-pdf", "EPUB to PDF", "pdf"),

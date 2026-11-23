@@ -1,6 +1,8 @@
 # Route coverage matrix
 
-Generated from `frontend/src/lib/tools/registry.ts` (`buildRouteMatrix()`). Reference site: [FreeConvert](https://www.freeconvert.com/) (feature coverage only).
+Generated from `frontend/src/lib/tools/registry.ts` (`buildRouteMatrix()`). Full export: [ROUTE_MATRIX_FULL.md](./ROUTE_MATRIX_FULL.md) via `npx tsx --tsconfig frontend/tsconfig.json frontend/scripts/export-route-matrix.ts`.
+
+Reference site: [FreeConvert](https://www.freeconvert.com/) (feature coverage only).
 
 | Status | Meaning |
 |--------|---------|

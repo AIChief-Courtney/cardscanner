@@ -5,6 +5,7 @@ import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 
 export const metadata = { title: "Convert", description: "Browse file conversion tools on FileDock." };
+export const dynamic = "force-dynamic";
 
 export default async function ConvertDirectoryPage() {
   const user = await safeHeaderUser();

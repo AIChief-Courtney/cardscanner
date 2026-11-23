@@ -4,6 +4,7 @@ import { safeHeaderUser } from "@/lib/safe-session";
 import { isAdmin } from "@backend/lib/roles";
 
 export const metadata = { title: "FAQ" };
+export const dynamic = "force-dynamic";
 
 export default async function FaqPage() {
   const user = await safeHeaderUser();
