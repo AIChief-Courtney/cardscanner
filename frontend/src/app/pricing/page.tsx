@@ -1,23 +1,11 @@
-import { Header } from "@/components/brand";
-import { SiteFooter } from "@/components/site-footer";
-import { PricingCheckout } from "@/components/user/pricing-checkout";
-import { safeHeaderUser } from "@/lib/safe-session";
-import { isAdmin } from "@backend/lib/roles";
+import type { Metadata } from "next";
+import { FreeConvertEmbedPage } from "@/components/user/freeconvert-embed-page";
 
-export const metadata = { title: "Pricing", description: "FileDock plans (demo checkout)." };
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: { absolute: "Pricing - FreeConvert.com" },
+  description: "Upgrade for more file size, batch conversions, and priority processing.",
+};
 
-export default async function PricingPage() {
-  const user = await safeHeaderUser();
-  return (
-    <>
-      <Header signedIn={!!user} admin={user ? isAdmin(user.role) : false} />
-      <main id="main-content" className="workspace">
-        <h1>Pricing</h1>
-        <p className="tool-demo-banner">Checkout is demo-only — no payment details are collected.</p>
-        <PricingCheckout />
-      </main>
-      <SiteFooter signedIn={!!user} admin={user ? isAdmin(user.role) : false} />
-    </>
-  );
+export default function PricingPage() {
+  return <FreeConvertEmbedPage fcPath="pricing" title="Pricing" />;
 }

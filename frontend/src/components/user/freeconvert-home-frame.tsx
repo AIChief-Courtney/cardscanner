@@ -8,7 +8,7 @@ export function FreeConvertHomeFrame() {
         <iframe
           className="fc-embed-frame"
           title="FreeConvert — Online File Converter"
-          src="/fc/"
+          src="/fc"
           loading="eager"
           referrerPolicy="no-referrer-when-downgrade"
         />
