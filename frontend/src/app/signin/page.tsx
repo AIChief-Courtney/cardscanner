@@ -17,26 +17,25 @@ export default async function SignIn() {
       <Header />
       <div className="auth-layout">
         <aside className="auth-aside" aria-labelledby="signin-aside-title">
-          <span className="eyebrow">Welcome back</span>
-          <h2 id="signin-aside-title">Sign in with confidence</h2>
+          <span className="eyebrow eyebrow--product">Card Scanner</span>
+          <h2 id="signin-aside-title">Welcome back</h2>
           <p>
-            Use the same email and password you chose at sign-up. We’ll send you to your dashboard as soon as
-            everything checks out.
+            Sign in to open your dashboard with uploads, balance, and the full Tools catalog in the header.
           </p>
           <ul className="help-list">
+            <li>Use the Tools menu for converters and OCR before or after login.</li>
             <li>Passwords are at least 12 characters.</li>
-            <li>Sign out anytime from the dashboard.</li>
-            <li>Admins are taken to the admin panel after sign-in.</li>
+            <li>Admins are routed to the admin console automatically.</li>
           </ul>
         </aside>
         <main id="main-content" className="auth-card">
-          <span className="eyebrow">Account</span>
+          <span className="eyebrow eyebrow--product">Login</span>
           <h1>Sign in</h1>
-          <p>Enter your details below to continue.</p>
+          <p>Enter your email and password to continue to your workspace.</p>
           <AuthForm />
         </main>
       </div>
-      <SiteFooter />
+      <SiteFooter signedIn={false} />
     </div>
   );
 }

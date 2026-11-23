@@ -16,26 +16,25 @@ export default async function SignUp() {
       <Header />
       <div className="auth-layout">
         <aside className="auth-aside" aria-labelledby="signup-aside-title">
-          <span className="eyebrow">Get started</span>
+          <span className="eyebrow eyebrow--product">Card Scanner</span>
           <h2 id="signup-aside-title">Create your free account</h2>
           <p>
-            One form, no credit card. After you sign up we sign you in automatically and open your personal
-            dashboard.
+            One quick form — we sign you in and send you straight to the dashboard with upload and profile tools.
           </p>
           <ul className="help-list">
+            <li>Explore the Tools mega menu on any page as a guest.</li>
             <li>Pick a strong password you’ll remember.</li>
-            <li>Use a real email—you’ll need it to sign in later.</li>
-            <li>Administrator access is granted separately by your team.</li>
+            <li>Administrator roles are assigned separately.</li>
           </ul>
         </aside>
         <main id="main-content" className="auth-card">
-          <span className="eyebrow">New account</span>
+          <span className="eyebrow eyebrow--product">Sign up</span>
           <h1>Create account</h1>
-          <p>Takes about a minute. Fields marked required must be filled in.</p>
+          <p>Free workspace · no credit card required.</p>
           <AuthForm signup />
         </main>
       </div>
-      <SiteFooter />
+      <SiteFooter signedIn={false} />
     </div>
   );
 }

@@ -14,9 +14,9 @@ export default async function DashboardPage() {
   if (isAdmin(user.role)) redirect(accountHomePath(user.role));
   return (
     <>
-      <Header signedIn admin={false} />
-      <Dashboard email={user.email} balanceUsd={user.balanceUsd} admin={false} />
-      <SiteFooter />
+      <Header signedIn={true} admin={false} tone="dashboard" />
+      <Dashboard email={user.email} balanceUsd={user.balanceUsd} />
+      <SiteFooter signedIn={true} admin={false} />
     </>
   );
 }

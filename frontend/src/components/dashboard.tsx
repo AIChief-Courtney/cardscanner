@@ -1,116 +1,117 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import Link from "next/link";
-import { Home, LayoutDashboard, LogOut, Shield, UserRound, Wallet } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import { formatUsd } from "@/lib/money";
+import { UploadZone } from "@/components/user/upload-zone";
+import { ToolsCatalog } from "@/components/user/tools-catalog";
 
 export function Dashboard({
   email,
   balanceUsd,
-  admin = false,
-  adminAccessDenied = false,
 }: {
   email: string;
   balanceUsd: string;
-  admin?: boolean;
-  adminAccessDenied?: boolean;
 }) {
   const initial = (email.trim()[0] ?? "?").toUpperCase();
 
   return (
-    <main id="main-content" className="workspace">
-      <div className="workspace-heading">
-        <div>
-          <span className="eyebrow">Your account</span>
-          <h1>Dashboard</h1>
-          <div className="account-chip" aria-label={`Signed in as ${email}`}>
-            <span className="account-avatar" aria-hidden>
-              {initial}
-            </span>
-            <span>{email}</span>
-          </div>
-        </div>
-        <button
-          className="button outline small"
-          type="button"
-          aria-label="Sign out"
-          onClick={() => signOut({ callbackUrl: "/" })}
-        >
-          <LogOut size={16} aria-hidden /> Sign out
-        </button>
-      </div>
-
-      {adminAccessDenied && !admin && (
-        <div className="message error" role="alert">
-          Admin access needs <strong>role = 1</strong> on your account. Set it in the database, then refresh this
-          page or sign out and sign in again.
-        </div>
-      )}
-
-      <div className="stats-grid" style={{ marginBottom: 16 }}>
-        <div className="stat">
-          <p>Balance</p>
-          <strong>{formatUsd(balanceUsd)}</strong>
-        </div>
-      </div>
-
-      <div className="quick-grid">
-        <Link className="quick-card" href="/profile">
-          <UserRound size={20} aria-hidden />
-          <h3>Your profile</h3>
-          <p>Edit email, balance, and password in one place.</p>
-        </Link>
-        <Link className="quick-card" href="/">
-          <Home size={20} aria-hidden />
-          <h3>Back to home</h3>
-          <p>Read how Scratch works and jump into sign-up or sign-in again.</p>
-        </Link>
-        <div className="quick-card">
-          <Wallet size={20} aria-hidden />
-          <h3>Account balance</h3>
-          <p>Your balance is {formatUsd(balanceUsd)} USD. Contact support if something looks wrong.</p>
-        </div>
-        {admin && (
-          <Link className="quick-card" href="/admin/overview">
-            <Shield size={20} aria-hidden />
-            <h3>Admin overview</h3>
-            <p>View all users, roles, and account dates in one table.</p>
-          </Link>
-        )}
-      </div>
-
-      <div className="panel panel-glass">
-        <div className="empty-state">
-          <div className="empty-state-icon">
-            <LayoutDashboard size={26} strokeWidth={1.5} aria-hidden />
-          </div>
-          <h3>Your workspace is ready</h3>
-          <p className="placeholder-note">
-            This is your personal hub after sign-in. More tools can live here later—for now, use the
-            cards above to move around the site.
+    <main id="main-content" className="user-workspace">
+      <header className="dashboard-hero panel-glass" aria-labelledby="dashboard-title">
+        <div className="dashboard-hero-main">
+          <span className="dashboard-hero-badge">Your workspace</span>
+          <h1 id="dashboard-title">Dashboard</h1>
+          <p>
+            Convert, compress, and edit files from the header — FreeConvert-style tools, one account.
           </p>
-          <div className="empty-state-actions">
-            <Link className="button dark small" href="/">
-              Explore the home page
-            </Link>
-            {admin && (
-              <Link className="button outline small" href="/admin/overview">
-                Open admin
-              </Link>
-            )}
+          <div className="dashboard-hero-pills" role="list">
+            <span className="dashboard-hero-pill" role="listitem">
+              Convert
+            </span>
+            <span className="dashboard-hero-pill" role="listitem">
+              Compress
+            </span>
+            <span className="dashboard-hero-pill" role="listitem">
+              Tools
+            </span>
+            <span className="dashboard-hero-pill" role="listitem">
+              API
+            </span>
           </div>
         </div>
-      </div>
+        <aside className="dashboard-hero-account" aria-label="Account summary">
+          <span className="dashboard-hero-avatar" aria-hidden>
+            {initial}
+          </span>
+          <div className="dashboard-hero-account-body">
+            <p className="dashboard-hero-label">Signed in as</p>
+            <p className="dashboard-hero-email">{email}</p>
+            <p className="dashboard-hero-balance">
+              <Wallet size={16} aria-hidden />
+              Balance {formatUsd(balanceUsd)}
+            </p>
+          </div>
+          <Link className="button dark small button--blue dashboard-hero-account-btn" href="/profile">
+            Account <ArrowRight size={15} aria-hidden />
+          </Link>
+        </aside>
+      </header>
 
-      <div className="panel" style={{ marginTop: 16 }}>
-        <h2 style={{ fontSize: 17, marginBottom: 10 }}>Quick tips</h2>
-        <ul className="help-list">
-          <li>Use the header anytime to reach Home or Dashboard.</li>
-          <li>Sign out before using a shared or public computer.</li>
-          <li>Need admin access? Ask your team owner to run the admin CLI for your email.</li>
-        </ul>
-      </div>
+      <UploadZone />
+
+      <section className="user-dash-highlights" aria-labelledby="dash-highlights-title">
+        <h2 id="dash-highlights-title" className="sr-only">
+          Highlights
+        </h2>
+        <article className="user-highlight-card">
+          <Sparkles size={20} aria-hidden />
+          <div>
+            <h3>Convert · Compress · Tools</h3>
+            <p>Three header menus — converters, compression, and OCR — each with its own dropdown.</p>
+          </div>
+        </article>
+        <article className="user-highlight-card">
+          <ShieldCheck size={20} aria-hidden />
+          <div>
+            <h3>Secure session</h3>
+            <p>Sign out from the header when you leave a shared device.</p>
+          </div>
+        </article>
+      </section>
+
+      <ToolsCatalog signedIn />
+
+      <section className="plans-strip panel" id="plans" aria-labelledby="plans-title">
+        <div className="plans-strip-head">
+          <span className="eyebrow eyebrow--product">Plans</span>
+          <h2 id="plans-title">Simple pricing for growing teams</h2>
+          <p>Start free on your dashboard. Upgrade when you need higher limits and priority OCR.</p>
+        </div>
+        <div className="plans-strip-cards">
+          <article className="plan-card">
+            <h3>Free</h3>
+            <p className="plan-price">$0</p>
+            <ul>
+              <li>Core converters</li>
+              <li>Standard upload size</li>
+              <li>Email support</li>
+            </ul>
+            <span className="plan-badge">Current</span>
+          </article>
+          <article className="plan-card plan-card--accent">
+            <h3>Pro</h3>
+            <p className="plan-price">Coming soon</p>
+            <ul>
+              <li>Batch OCR &amp; ID card scans</li>
+              <li>Larger files</li>
+              <li>Priority processing</li>
+            </ul>
+            <button type="button" className="button dark small" disabled>
+              Notify me
+            </button>
+          </article>
+        </div>
+      </section>
     </main>
   );
 }

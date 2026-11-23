@@ -1,23 +1,38 @@
 import Link from "next/link";
 
-export function SiteFooter() {
+export function SiteFooter({
+  signedIn = false,
+  admin = false,
+}: {
+  signedIn?: boolean;
+  admin?: boolean;
+}) {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer site-footer--product">
       <div className="site-footer-inner">
         <p className="site-footer-tagline">
-          <span className="text-gradient" style={{ fontWeight: 700 }}>
-            Scratch
+          <span className="text-gradient text-gradient--blue" style={{ fontWeight: 700 }}>
+            Card Scanner
           </span>{" "}
-          — simple sign-in, a personal dashboard, and admin tools when you need them.
+          — {signedIn ? "Convert, scan, and manage files from your dashboard." : "Browse tools as a guest — sign in for uploads and your workspace."}
         </p>
         <nav className="site-footer-nav" aria-label="Footer">
-          <Link href="/">Home</Link>
-          <Link href="/signin">Sign in</Link>
-          <Link href="/signup">Sign up</Link>
-          <Link href="/dashboard">Dashboard</Link>
-          <Link href="/profile">Profile</Link>
+          {!signedIn && <Link href="/">Home</Link>}
+          {signedIn && !admin && (
+            <>
+              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/profile">Account</Link>
+            </>
+          )}
+          {signedIn && admin && <Link href="/admin/overview">Admin</Link>}
+          {!signedIn && (
+            <>
+              <Link href="/signin">Login</Link>
+              <Link href="/signup">Sign up</Link>
+            </>
+          )}
         </nav>
-        <p className="site-footer-copy">© {new Date().getFullYear()} Scratch. All rights reserved.</p>
+        <p className="site-footer-copy">© {new Date().getFullYear()} Card Scanner. All rights reserved.</p>
       </div>
     </footer>
   );

@@ -18,7 +18,6 @@ export type ProfileUser = {
 export function ProfileForm({ user: initial }: { user: ProfileUser }) {
   const router = useRouter();
   const [email, setEmail] = useState(initial.email);
-  const [balanceUsd, setBalanceUsd] = useState(initial.balanceUsd);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -39,7 +38,6 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
 
     const payload: Record<string, string | number> = {};
     if (email.trim().toLowerCase() !== initial.email) payload.email = email.trim();
-    if (balanceUsd !== initial.balanceUsd) payload.balanceUsd = Number(balanceUsd);
     if (newPassword) {
       payload.currentPassword = currentPassword;
       payload.newPassword = newPassword;
@@ -63,7 +61,6 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
 
       const saved = body.user as ProfileUser;
       setEmail(saved.email);
-      setBalanceUsd(saved.balanceUsd);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -77,12 +74,12 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
   }
 
   return (
-    <main id="main-content" className="workspace">
-      <div className="workspace-heading">
+    <main id="main-content" className="workspace user-workspace">
+      <div className="workspace-heading user-workspace-intro">
         <div>
-          <span className="eyebrow">Your account</span>
-          <h1>Profile</h1>
-          <p>View and update your account details, balance, and password.</p>
+          <span className="eyebrow eyebrow--product">Account</span>
+          <h1>Account</h1>
+          <p>Update your email and password. Balance updates when you top up.</p>
         </div>
       </div>
 
@@ -119,7 +116,10 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
             </div>
             <div>
               <dt>Balance</dt>
-              <dd className="profile-balance">{formatUsd(balanceUsd)}</dd>
+              <dd className="profile-balance">{formatUsd(initial.balanceUsd)}</dd>
+              <dd className="field-hint" style={{ marginTop: 6 }}>
+                Read-only — only top-ups change your balance.
+              </dd>
             </div>
           </dl>
         </section>
@@ -129,7 +129,7 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
             Edit profile
           </h2>
           <p className="placeholder-note" style={{ marginBottom: 20 }}>
-            Email and balance changes save together. Password updates require your current password.
+            Email saves here. Password updates require your current password.
           </p>
 
           <form className="profile-form" onSubmit={submit}>
@@ -144,21 +144,6 @@ export function ProfileForm({ user: initial }: { user: ProfileUser }) {
                 disabled={busy}
                 onChange={(e) => setEmail(e.target.value)}
               />
-            </label>
-
-            <label>
-              <span>Balance (USD)</span>
-              <input
-                type="number"
-                name="balanceUsd"
-                step="0.01"
-                min={0}
-                max={999_999_999.99}
-                value={balanceUsd}
-                disabled={busy}
-                onChange={(e) => setBalanceUsd(e.target.value)}
-              />
-              <p className="field-hint">Shown as {formatUsd(balanceUsd)}</p>
             </label>
 
             <hr className="profile-divider" />

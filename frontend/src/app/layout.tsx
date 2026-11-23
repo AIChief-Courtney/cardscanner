@@ -2,21 +2,21 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Scratch | Sign in and get started", template: "%s | Scratch" },
+  title: { default: "Card Scanner | Convert & OCR", template: "%s | Card Scanner" },
   description:
-    "Create a free Scratch account, sign in anytime, and use your personal dashboard. Admins manage users from one place.",
-  applicationName: "Scratch",
+    "Convert images, PDFs, and cards with Card Scanner. Sign in for your dashboard, uploads, and profile.",
+  applicationName: "Card Scanner",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Scratch | Sign in and get started",
-    description: "Create your Scratch account or sign in to continue to your dashboard.",
-    siteName: "Scratch",
+    title: "Card Scanner | Convert & OCR",
+    description: "Tools mega menu, clean dashboard, and secure sign-in for your document workspace.",
+    siteName: "Card Scanner",
     type: "website",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f0d1a",
+  themeColor: "#1a73e8",
   width: "device-width",
   initialScale: 1,
 };
