@@ -4,6 +4,7 @@ import { currentUser } from "@backend/lib/access";
 import { accountHomePath, isAdmin } from "@backend/lib/roles";
 import { Header } from "@/components/brand";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminRouteEffects } from "@/components/admin/admin-route";
 import "./admin-theme.css";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -13,7 +14,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="admin-shell">
-      <Header signedIn admin variant="admin" />
+      <AdminRouteEffects />
+      <Header signedIn={true} admin={true} variant="admin" />
       <div className="admin-frame">
         <AdminNav />
         <div className="admin-frame-content">{children}</div>
