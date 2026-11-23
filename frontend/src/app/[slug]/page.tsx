@@ -5,7 +5,8 @@ import { isAdmin } from "@backend/lib/roles";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
 import { ToolConverterPage } from "@/components/user/tool-converter-page";
-import { ApiToolPage } from "@/components/user/api-tool-page";
+import { ToolFreeConvertPage } from "@/components/user/tool-freeconvert-page";
+import { freeConvertPath } from "@/lib/freeconvert-url";
 import { allToolRoutes, getToolByRoute } from "@/lib/tool-registry";
 
 export const dynamic = "force-dynamic";
@@ -35,12 +36,13 @@ export default async function ToolRoutePage({ params }: Props) {
   const user = await currentUser();
   const signedIn = !!user;
   const admin = user ? isAdmin(user.role) : false;
+  const fcEmbed = !!freeConvertPath(tool.slug, tool.kind);
 
   return (
     <>
       <Header signedIn={signedIn} admin={admin} />
-      {tool.kind === "api" ? <ApiToolPage meta={tool} /> : <ToolConverterPage meta={tool} />}
-      <SiteFooter signedIn={signedIn} admin={admin} />
+      {fcEmbed ? <ToolFreeConvertPage meta={tool} /> : <ToolConverterPage meta={tool} />}
+      {!fcEmbed && <SiteFooter signedIn={signedIn} admin={admin} />}
     </>
   );
 }
