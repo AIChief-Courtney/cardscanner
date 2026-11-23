@@ -14,7 +14,7 @@ Reference site: [FreeConvert](https://www.freeconvert.com/) (feature coverage on
 
 - `npm run typecheck` (frontend)
 - `npm run build` (frontend)
-- Manual: header mega menus, search (Escape), `/pdf-to-word` queue → demo result → `/account/tasks`
+- Manual: header mega menus, search (Escape), `/pdf-to-word` queue → demo result → `/dashboard`
 
 Full row export: run a small script importing `buildRouteMatrix()` or inspect registry slugs (100+ tools).
 
@@ -25,5 +25,5 @@ Full row export: run a small script importing `buildRouteMatrix()` or inspect re
 | browser-local | Unit/time calculators |
 | demo | Converters, compressors, most PDF/media tools |
 | external | resize-image, edit-pdf, … |
-| integrated | next-auth sign-in, existing `/profile` (not new auth) |
+| integrated | next-auth sign-in → `/dashboard` (`/account/*`, `/profile` redirect) |
 | unavailable | Live API, cloud pickers, payments |

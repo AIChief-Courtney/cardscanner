@@ -18,8 +18,7 @@ const STATIC_ROUTES = [
   { referenceUrl: "—", localUrl: "/security", behavior: "Security", status: "verified", gaps: "—" },
   { referenceUrl: "—", localUrl: "/signin", behavior: "NextAuth sign-in", status: "integrated", gaps: "—" },
   { referenceUrl: "—", localUrl: "/signup", behavior: "Registration", status: "integrated", gaps: "—" },
-  { referenceUrl: "—", localUrl: "/account/*", behavior: "Account hub (demo billing)", status: "demo", gaps: "Login gated" },
-  { referenceUrl: "—", localUrl: "/profile", behavior: "Profile", status: "integrated", gaps: "Login gated" },
+  { referenceUrl: "—", localUrl: "/dashboard", behavior: "Signed-in workspace", status: "integrated", gaps: "/account/* and /profile redirect here" },
 ];
 
 const toolRows = buildRouteMatrix().map((r) => ({

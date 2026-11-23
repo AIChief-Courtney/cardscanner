@@ -1690,33 +1690,6 @@
   background: #fff;
 }
 
-.account-shell {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 16px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
-}
-
-.account-nav ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.account-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.account-table th,
-.account-table td {
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-  padding: 8px;
-}
-
 .calc-unit-row {
   display: flex;
   gap: 8px;
@@ -1749,12 +1722,6 @@
   gap: 12px;
   list-style: none;
   padding: 0;
-}
-
-@media (max-width: 768px) {
-  .account-shell {
-    grid-template-columns: 1fr;
-  }
 }
 
 .tool-breadcrumb ol {

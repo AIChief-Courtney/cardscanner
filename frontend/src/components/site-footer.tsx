@@ -14,7 +14,7 @@ export function SiteFooter({
           <span className="text-gradient text-gradient--blue" style={{ fontWeight: 700 }}>
             FileDock
           </span>{" "}
-          — {signedIn ? "Tasks, jobs, and billing in your account." : "Guest demos in the browser — sign in for history."}
+          — {signedIn ? "Your signed-in workspace starts on the dashboard." : "Guest demos in the browser — sign in for history."}
         </p>
         <nav className="site-footer-nav" aria-label="Footer">
           <Link href="/convert">Convert</Link>
@@ -24,12 +24,7 @@ export function SiteFooter({
           <Link href="/faq">FAQ</Link>
           <Link href="/privacy">Privacy (draft)</Link>
           {!signedIn && <Link href="/">Home</Link>}
-          {signedIn && !admin && (
-            <>
-              <Link href="/dashboard">Dashboard</Link>
-              <Link href="/account/profile">Account</Link>
-            </>
-          )}
+          {signedIn && !admin && <Link href="/dashboard">Dashboard</Link>}
           {signedIn && admin && <Link href="/admin/overview">Admin</Link>}
           {!signedIn && (
             <>

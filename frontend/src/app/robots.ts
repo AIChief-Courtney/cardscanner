@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/signin", "/signup", "/dashboard", "/profile", "/admin", "/api/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/signin", "/signup", "/dashboard", "/admin", "/api/"] }],
     ...(siteUrl ? { sitemap: `${siteUrl.replace(/\/$/, "")}/sitemap.xml` } : {}),
   };
 }

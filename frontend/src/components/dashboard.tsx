@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import { ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import { formatUsd } from "@/lib/money";
 import { UploadZone } from "@/components/user/upload-zone";
 import { ToolsCatalog } from "@/components/user/tools-catalog";
@@ -51,9 +50,6 @@ export function Dashboard({
               Balance {formatUsd(balanceUsd)}
             </p>
           </div>
-          <Link className="button dark small button--blue dashboard-hero-account-btn" href="/profile">
-            Account <ArrowRight size={15} aria-hidden />
-          </Link>
         </aside>
       </header>
 

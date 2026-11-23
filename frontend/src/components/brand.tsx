@@ -29,7 +29,6 @@ export function Header({
   variant?: "default" | "admin";
   tone?: "default" | "dashboard";
 }) {
-  const accountHref = admin ? "/admin/overview" : signedIn ? "/account/profile" : "/signin";
   const signupHref = signedIn ? "/dashboard" : "/signup";
   const plansHref = "/pricing";
   const brandHref = "/";
@@ -75,9 +74,6 @@ export function Header({
             </>
           ) : (
             <>
-              <Link className="fc-login-link" href={accountHref}>
-                Account
-              </Link>
               <Link className="fc-signup-btn" href={signupHref}>
                 Dashboard
               </Link>

@@ -1,12 +1,10 @@
 /** Paths served by FileDock (not proxied to freeconvert.com). */
 const SKIP_PREFIXES = [
   "/_next",
-  "/account",
   "/admin",
   "/signin",
   "/signup",
   "/dashboard",
-  "/profile",
   "/contact",
   "/faq",
   "/privacy",
