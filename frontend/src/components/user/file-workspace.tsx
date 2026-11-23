@@ -12,7 +12,7 @@ import { processImageBrowser } from "@/lib/tools/image-browser-adapter";
 import { saveDemoJob } from "@/lib/tools/job-history";
 import { OutputFormatPicker } from "@/components/user/output-format-picker";
 import { FcOutputFormatPicker } from "@/components/user/fc-output-format-picker";
-import { PDF_CONVERTER_OUTPUT_GROUPS } from "@/lib/tools/pdf-converter-outputs";
+import { PDF_CONVERTER_OUTPUT_GROUPS, usesFcOutputPicker } from "@/lib/tools/pdf-converter-outputs";
 
 type SourceTab = "device" | "dropbox" | "drive" | "onedrive" | "url";
 type DownloadItem = { id: string; name: string; url: string; size: number };
@@ -50,7 +50,7 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
   const showOutputPicker = !lockOutput && !!meta.outputFormats?.length;
   const validCount = queue.filter((f) => f.status === "valid").length;
   const isImageBrowser = record?.execution === "browser-local" && meta.kind === "image";
-  const useFcOutputPicker = meta.slug === "pdf-converter";
+  const useFcOutputPicker = usesFcOutputPicker(meta.slug, meta.route);
 
   const revokePreviews = useCallback((files: QueuedFile[]) => {
     for (const f of files) {
