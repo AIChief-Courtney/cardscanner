@@ -9,10 +9,6 @@ import {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname === "/pdf-convert") {
-    return NextResponse.redirect(new URL("/pdf-converter", request.url));
-  }
-
   if (FC_HEADER_REDIRECTS.has(pathname)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
