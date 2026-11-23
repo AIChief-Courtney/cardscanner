@@ -1,36 +1,39 @@
 ---
-description: Commit and push to GitHub after meaningful project updates
+description: Automatically commit and push to dev-courtney after repo updates
 alwaysApply: true
 ---
 
-# Commit and push after updates
+# Automatic commit and push
 
-When you finish work that changes this repository (code, config, Prisma schema/migrations, docs, or `.cursor/rules`), publish it to GitHub before ending the turn.
+**Default every session:** work on branch `dev-courtney` (create/checkout from `main` if missing). Publish there automatically—do not wait for the user to ask.
 
-**Remote:** `origin` → https://github.com/AIChief-Courtney/cardscanner.git, branch `main`.
+**Remote:** `origin` → https://github.com/AIChief-Courtney/cardscanner.git
 
-## When to commit
+## Mandatory end-of-task flow
 
-- Commit after a coherent chunk of work (a feature, fix, or docs update)—not after every single line edit mid-task.
-- If the user only asked a question with no file changes, do not commit.
+Whenever this turn changes tracked project files (code, config, Prisma schema/migrations, docs, `.cursor/rules`), before you finish:
 
-## What never to commit
+1. `git status` and review `git diff` (staged and unstaged).
+2. Commit on `dev-courtney` in one or more focused commits (conventional `feat` / `fix` / `chore` / `docs` / `refactor`, imperative subject, short body explaining why).
+3. `git push -u origin dev-courtney` on first use, then `git push origin dev-courtney` (or `git push` when upstream is set).
+4. Tell the user the commit subject(s) and that `dev-courtney` is pushed.
+
+Skip commits only when: no files changed, or the user explicitly says not to commit/push in that same message.
+
+## Branch policy
+
+- Day-to-day agent edits → `dev-courtney` only (auto commit + auto push).
+- `main` → merge or push only when the user explicitly requests it; never force-push `main`.
+
+If you are on `main` after edits, move commits to `dev-courtney` (cherry-pick or new branch) rather than pushing straight to `main` unless the user asked for `main`.
+
+## Never commit
 
 - `.env`, secrets, credentials
-- `node_modules/`, `.next/`, `*.log`, build caches (e.g. `*.tsbuildinfo`)
+- `node_modules/`, `.next/`, `*.log`, build caches (`*.tsbuildinfo`)
 
-## Commit quality
+## On push failure
 
-1. Run `git status` and `git diff` (staged and unstaged) before committing.
-2. Split unrelated changes into separate commits when practical.
-3. Use conventional prefixes: `feat`, `fix`, `chore`, `docs`, `refactor`.
-4. Subject line: imperative, ~72 chars. Body: what changed and why (1–3 sentences).
-5. Do not amend pushed commits; do not force-push `main` unless the user explicitly asks.
+Report the error. For non-fast-forward on `dev-courtney`, `git pull --rebase origin dev-courtney` then push again when safe without overwriting others’ work.
 
-## Push
-
-1. After one or more new commits, run `git push origin main` (or `git push` when tracking is set).
-2. If push fails (auth, non-fast-forward), report the error and what the user should do; retry after a pull/rebase only if safe and requested.
-3. Briefly tell the user the commit subject(s) and that `main` is up to date on GitHub.
-
-This rule applies even when general guidance says “commit only when asked”—for this repo, publishing updates is expected unless the user says otherwise in the same message.
+This rule overrides generic “commit only when asked” guidance for this repository.
