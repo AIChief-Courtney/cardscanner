@@ -34,7 +34,7 @@ export function buildToolPageContent(meta: ToolPageMeta): ToolPageContent {
 
   const aboutParagraphs = [
     `${meta.tagline}`,
-    `Upload ${meta.fileSupported} files, then run ${action} in the workspace above — the same flow as freeconvert.com tool pages.`,
+    `Upload ${meta.fileSupported} files, pick an output format when available, then run ${action} in the workspace above.`,
   ];
 
   const steps: ToolStep[] = [
@@ -63,7 +63,7 @@ export function buildToolPageContent(meta: ToolPageMeta): ToolPageContent {
     },
     {
       title: "Free & Secure",
-      body: "Free to try in the browser on Card Scanner. Files are encrypted in transit and not sold to third parties.",
+      body: "Free to try in the browser on FileDock. Demo mode keeps files local unless a live adapter is connected.",
     },
   ];
 

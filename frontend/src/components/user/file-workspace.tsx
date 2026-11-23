@@ -1,15 +1,19 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CloudUpload, FileImage, LoaderCircle, Settings2, Trash2, XCircle, CheckCircle2 } from "lucide-react";
+import { CloudUpload, FileImage, LoaderCircle, Settings2, Trash2, XCircle, CheckCircle2, RotateCcw } from "lucide-react";
 import type { JobStatus, QueuedFile } from "@/lib/tools/types";
 import type { ToolPageMeta } from "@/lib/tool-registry";
 import { getToolRecord } from "@/lib/tools/registry";
 import { validateIncomingFile, isValidUrlSyntax } from "@/lib/tools/validate-queue";
 import { demoConversionAdapter } from "@/lib/tools/demo-adapter";
-import { saveDemoJob, type DemoJob } from "@/lib/tools/job-history";
+import { processImageBrowser } from "@/lib/tools/image-browser-adapter";
+import { saveDemoJob } from "@/lib/tools/job-history";
+import { OutputFormatPicker } from "@/components/user/output-format-picker";
 
 type SourceTab = "device" | "dropbox" | "drive" | "onedrive" | "url";
+type DownloadItem = { id: string; name: string; url: string; size: number };
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -19,20 +23,27 @@ function formatBytes(n: number): string {
 
 export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const filesRef = useRef<Map<string, File>>(new Map());
   const [tab, setTab] = useState<SourceTab>("device");
   const [url, setUrl] = useState("");
   const [dragging, setDragging] = useState(false);
   const [queue, setQueue] = useState<QueuedFile[]>([]);
   const [outputFormat, setOutputFormat] = useState(meta.defaultOutput ?? meta.outputFormats?.[0] ?? "");
+  const [perFileOutput, setPerFileOutput] = useState<Record<string, string>>({});
   const [jobStatus, setJobStatus] = useState<JobStatus>("ready");
+  const [progress, setProgress] = useState(0);
   const [resultMsg, setResultMsg] = useState<string | null>(null);
   const [sampleOutput, setSampleOutput] = useState(false);
+  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [settingsScope, setSettingsScope] = useState<"batch" | "one">("batch");
-  const [quality, setQuality] = useState(80);
+  const [quality, setQuality] = useState(85);
 
   const record = getToolRecord(meta.slug);
-  const fixedOutput = meta.template === "conversion" && meta.defaultOutput;
+  const lockOutput =
+    meta.template === "conversion" && !!meta.defaultOutput && (!meta.outputFormats || meta.outputFormats.length <= 1);
+  const showOutputPicker = !lockOutput && !!meta.outputFormats?.length;
   const validCount = queue.filter((f) => f.status === "valid").length;
+  const isImageBrowser = record?.execution === "browser-local" && meta.kind === "image";
 
   const revokePreviews = useCallback((files: QueuedFile[]) => {
     for (const f of files) {
@@ -40,7 +51,13 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
     }
   }, []);
 
-  useEffect(() => () => revokePreviews(queue), [queue, revokePreviews]);
+  useEffect(
+    () => () => {
+      revokePreviews(queue);
+      downloads.forEach((d) => URL.revokeObjectURL(d.url));
+    },
+    [queue, downloads, revokePreviews],
+  );
 
   const addFiles = useCallback(
     (list: FileList | null) => {
@@ -52,12 +69,15 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
           if (next.length >= meta.maxFiles) break;
           const row = validateIncomingFile(file, meta, names);
           names.add(file.name);
+          if (row.status === "valid") filesRef.current.set(row.id, file);
           next.push(row);
         }
         return next;
       });
       setResultMsg(null);
+      setDownloads([]);
       setJobStatus("ready");
+      setProgress(0);
     },
     [meta],
   );
@@ -66,26 +86,49 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
     setQueue((prev) => {
       const target = prev.find((f) => f.id === id);
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
+      filesRef.current.delete(id);
       return prev.filter((f) => f.id !== id);
     });
   }
 
+  function outputForFile(fileId: string): string {
+    if (settingsScope === "one" && perFileOutput[fileId]) return perFileOutput[fileId];
+    return outputFormat;
+  }
+
   async function runJob() {
     if (!record || validCount === 0 || jobStatus === "processing" || jobStatus === "submitting") return;
+    downloads.forEach((d) => URL.revokeObjectURL(d.url));
+    setDownloads([]);
     setJobStatus("submitting");
     setResultMsg(null);
     setSampleOutput(false);
+    setProgress(15);
     await new Promise((r) => setTimeout(r, 200));
     setJobStatus("processing");
-    const res = await demoConversionAdapter.process({
-      tool: record,
-      files: queue,
-      outputFormat: outputFormat || undefined,
-    });
+    setProgress(50);
+
+    const validEntries = queue
+      .filter((f) => f.status === "valid")
+      .map((f) => ({ id: f.id, file: filesRef.current.get(f.id) }))
+      .filter((x): x is { id: string; file: File } => !!x.file);
+
+    const res = isImageBrowser
+      ? await processImageBrowser({
+          tool: record,
+          fileEntries: validEntries,
+          outputFormat: outputFormat || undefined,
+          quality,
+        })
+      : await demoConversionAdapter.process({ tool: record, files: queue, outputFormat: outputFormat || undefined });
+
+    setProgress(100);
     setJobStatus(res.status);
     setResultMsg(res.message);
     setSampleOutput(!!res.sampleOutput);
-    const job: DemoJob = {
+    if ("downloads" in res && Array.isArray(res.downloads)) setDownloads(res.downloads);
+
+    saveDemoJob({
       id: crypto.randomUUID(),
       jobId: `job_${Date.now().toString(36)}`,
       toolSlug: meta.slug,
@@ -99,15 +142,31 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
         outputLabel: res.outputLabel,
         sampleOutput: res.sampleOutput,
       })),
-    };
-    saveDemoJob(job);
+    });
+  }
+
+  function resetWorkspace() {
+    revokePreviews(queue);
+    downloads.forEach((d) => URL.revokeObjectURL(d.url));
+    filesRef.current.clear();
+    setQueue([]);
+    setDownloads([]);
+    setResultMsg(null);
+    setJobStatus("ready");
+    setProgress(0);
   }
 
   return (
     <div className="tool-workspace panel tool-workspace--filedock">
-      <p className="tool-demo-banner" role="status">
-        Demo mode — outputs are labeled samples. Files stay in your browser and are not uploaded.
-      </p>
+      {!isImageBrowser ? (
+        <p className="tool-demo-banner" role="status">
+          Demo mode — outputs are labeled samples. Files stay in your browser and are not uploaded.
+        </p>
+      ) : (
+        <p className="tool-browser-local-banner" role="status">
+          JPG, PNG, WEBP, and GIF export run in your browser for supported raster images.
+        </p>
+      )}
 
       <ul className="tool-source-tabs" role="tablist" aria-label="Upload source">
         {(
@@ -136,6 +195,15 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
         ))}
       </ul>
 
+      {showOutputPicker && meta.outputFormats && (
+        <OutputFormatPicker
+          formats={meta.outputFormats}
+          value={outputFormat}
+          onChange={setOutputFormat}
+          label={meta.template === "category" ? "Convert to" : "Output format"}
+        />
+      )}
+
       {tab === "url" ? (
         <div className="tool-url-source">
           <label htmlFor="tool-url-input">Paste a file URL</label>
@@ -144,7 +212,7 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://example.com/file.pdf"
+            placeholder="https://example.com/photo.jpg"
           />
           <p className="tool-url-hint">
             {url && !isValidUrlSyntax(url) ? (
@@ -195,26 +263,32 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
               multiple={meta.maxFiles > 1}
               onChange={(e) => addFiles(e.target.files)}
             />
-            <UploadIcon hasFile={validCount > 0} />
-            <p className="upload-drop-strong">Choose Files</p>
+            <div className="upload-drop-icon" aria-hidden>
+              {validCount > 0 ? <FileImage size={36} /> : <CloudUpload size={36} />}
+            </div>
+            <p className="upload-drop-strong">{dragging ? "Drop any files here!" : "Choose Files"}</p>
             <p className="upload-drop-hint">
-              Up to {meta.maxFiles} files · max {meta.maxSizeMb} MB each · {meta.fileSupported}
+              Max {meta.maxFiles} files · {meta.maxSizeMb} MB each · supports {meta.fileSupported}
             </p>
           </div>
+          <p className="tool-terms-line">
+            By proceeding, you confirm you own the rights to your files and agree to our{" "}
+            <Link href="/terms">Terms of Use</Link>.
+          </p>
         </div>
       )}
 
       {queue.length > 0 && (
         <section className="tool-queue" aria-label="File queue">
           <div className="tool-queue-head">
-            <h2 className="tool-queue-title">Queue ({queue.length})</h2>
+            <h2 className="tool-queue-title">Files ({queue.length})</h2>
             <button type="button" className="text-link" onClick={() => inputRef.current?.click()}>
               Add more
             </button>
           </div>
           <ul className="tool-queue-list">
             {queue.map((f) => (
-              <li key={f.id} className={`tool-queue-row tool-queue-row--${f.status}`}>
+              <li key={f.id} className={`tool-queue-row tool-queue-row--${f.status} tool-queue-row--responsive`}>
                 {f.previewUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={f.previewUrl} alt="" className="tool-queue-thumb" />
@@ -225,13 +299,26 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
                 )}
                 <span className="tool-queue-name">{f.name}</span>
                 <span className="tool-queue-size">{formatBytes(f.size)}</span>
+                {showOutputPicker && f.status === "valid" && settingsScope === "one" && (
+                  <select
+                    className="tool-queue-format"
+                    aria-label={`Output for ${f.name}`}
+                    value={outputForFile(f.id)}
+                    onChange={(e) => setPerFileOutput((prev) => ({ ...prev, [f.id]: e.target.value }))}
+                  >
+                    {meta.outputFormats!.map((fmt) => (
+                      <option key={fmt} value={fmt}>
+                        {fmt}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {showOutputPicker && f.status === "valid" && settingsScope === "batch" && (
+                  <span className="tool-queue-format-label">{outputFormat}</span>
+                )}
                 <span className="tool-queue-status">
-                  {f.status === "valid" ? (
-                    <CheckCircle2 size={16} aria-hidden />
-                  ) : (
-                    <XCircle size={16} aria-hidden />
-                  )}
-                  {f.status === "valid" ? "Valid" : f.error ?? f.status}
+                  {f.status === "valid" ? <CheckCircle2 size={16} aria-hidden /> : <XCircle size={16} aria-hidden />}
+                  {f.status === "valid" ? "Ready" : f.error ?? f.status}
                 </span>
                 <button type="button" className="icon-btn" aria-label={`Remove ${f.name}`} onClick={() => removeFile(f.id)}>
                   <Trash2 size={16} />
@@ -242,25 +329,25 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
         </section>
       )}
 
-      {!fixedOutput && meta.outputFormats && meta.outputFormats.length > 1 && (
-        <div className="tool-output-picker">
-          <label htmlFor="output-format">Output format (batch default)</label>
-          <select id="output-format" value={outputFormat} onChange={(e) => setOutputFormat(e.target.value)}>
-            {meta.outputFormats.map((fmt) => (
-              <option key={fmt} value={fmt}>
-                {fmt}
-              </option>
-            ))}
-          </select>
+      <details className="tool-advanced-settings" open={meta.template === "category" && meta.kind === "image"}>
+        <summary>
+          <Settings2 size={16} aria-hidden /> Advanced settings (optional)
+        </summary>
+        <WorkspaceSettings
+          quality={quality}
+          setQuality={setQuality}
+          scope={settingsScope}
+          setScope={setSettingsScope}
+          meta={meta}
+        />
+      </details>
+
+      {(jobStatus === "processing" || jobStatus === "submitting") && (
+        <div className="tool-progress" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
+          <div className="tool-progress-bar" style={{ width: `${progress}%` }} />
+          <span>Processing…</span>
         </div>
       )}
-
-      <details className="tool-advanced-settings" open={meta.template === "compressor"}>
-        <summary>
-          <Settings2 size={16} aria-hidden /> Settings ({settingsScope === "batch" ? "apply to all" : "per file"})
-        </summary>
-        <WorkspaceSettings quality={quality} setQuality={setQuality} scope={settingsScope} setScope={setSettingsScope} meta={meta} />
-      </details>
 
       <div className="tool-workspace-actions">
         <button
@@ -274,20 +361,25 @@ export function FileWorkspace({ meta }: { meta: ToolPageMeta }) {
           ) : null}
           {meta.convertLabel}
         </button>
+        <button type="button" className="button outline small" onClick={resetWorkspace} disabled={!queue.length && !resultMsg}>
+          <RotateCcw size={14} aria-hidden /> Reset
+        </button>
         <span className="tool-job-status" aria-live="polite">
-          Status: {jobStatus}
+          {jobStatus === "ready" ? "Ready" : jobStatus}
         </span>
       </div>
 
       {resultMsg && (
-        <div className="tool-result panel" role="status">
-          <p>{resultMsg}</p>
-          {sampleOutput && <p className="tool-sample-badge">Sample output — not your converted file.</p>}
-          <WorkspaceDownloads validCount={validCount} label={outputFormat || meta.outputHint} sample={sampleOutput} />
-          <button type="button" className="button outline small" onClick={() => setJobStatus("ready")}>
-            Start another
-          </button>
-        </div>
+        <ResultPanel
+          resultMsg={resultMsg}
+          sampleOutput={sampleOutput}
+          downloads={downloads}
+          validCount={validCount}
+          outputFormat={outputFormat}
+          jobStatus={jobStatus}
+          onRetry={runJob}
+          onReset={resetWorkspace}
+        />
       )}
     </div>
   );
@@ -320,25 +412,76 @@ function WorkspaceSettings({
           <input type="radio" name="scope" checked={scope === "batch"} onChange={() => setScope("batch")} /> Apply to all
         </label>
         <label>
-          <input type="radio" name="scope" checked={scope === "one"} onChange={() => setScope("one")} /> Per file (demo)
+          <input type="radio" name="scope" checked={scope === "one"} onChange={() => setScope("one")} /> Per file
         </label>
       </fieldset>
-      <button type="button" className="text-link" onClick={() => setQuality(80)}>
+      <button type="button" className="text-link" onClick={() => setQuality(85)}>
         Reset defaults
       </button>
     </div>
   );
 }
 
+function ResultPanel({
+  resultMsg,
+  sampleOutput,
+  downloads,
+  validCount,
+  outputFormat,
+  jobStatus,
+  onRetry,
+  onReset,
+}: {
+  resultMsg: string;
+  sampleOutput: boolean;
+  downloads: DownloadItem[];
+  validCount: number;
+  outputFormat: string;
+  jobStatus: JobStatus;
+  onRetry: () => void;
+  onReset: () => void;
+}) {
+  return (
+    <div className="tool-result panel" role="status">
+      <p>{resultMsg}</p>
+      {sampleOutput && <p className="tool-sample-badge">Sample output — not your converted file.</p>}
+      <WorkspaceDownloads downloads={downloads} validCount={validCount} label={outputFormat} sample={sampleOutput} />
+      {jobStatus === "failed" && (
+        <button type="button" className="button outline small" onClick={onRetry}>
+          Retry
+        </button>
+      )}
+      <button type="button" className="button outline small" onClick={onReset}>
+        Start another conversion
+      </button>
+    </div>
+  );
+}
+
 function WorkspaceDownloads({
+  downloads,
   validCount,
   label,
   sample,
 }: {
+  downloads: DownloadItem[];
   validCount: number;
   label?: string;
   sample: boolean;
 }) {
+  if (downloads.length) {
+    return (
+      <ul className="tool-downloads">
+        {downloads.map((d) => (
+          <li key={d.id}>
+            <a className="button outline small" href={d.url} download={d.name}>
+              Download {d.name} ({formatBytes(d.size)})
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   if (!validCount) return null;
   return (
     <ul className="tool-downloads">
@@ -350,21 +493,6 @@ function WorkspaceDownloads({
           </button>
         </li>
       ))}
-      {validCount > 1 && (
-        <li>
-          <button type="button" className="text-link" disabled>
-            Download all as ZIP (demo)
-          </button>
-        </li>
-      )}
     </ul>
-  );
-}
-
-function UploadIcon({ hasFile }: { hasFile: boolean }) {
-  return (
-    <div className="upload-drop-icon" aria-hidden>
-      {hasFile ? <FileImage size={36} /> : <CloudUpload size={36} />}
-    </div>
   );
 }

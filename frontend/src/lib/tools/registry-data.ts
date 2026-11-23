@@ -1,5 +1,12 @@
 import type { ToolRecord } from "@/lib/tools/types";
 import type { ToolKind } from "@/lib/user-tools";
+import {
+  AUDIO_OUTPUTS,
+  DOCUMENT_OUTPUTS,
+  IMAGE_OUTPUTS,
+  PDF_OUTPUTS,
+  VIDEO_OUTPUTS,
+} from "@/lib/tools/category-outputs";
 
 type Def = Partial<ToolRecord> & Pick<ToolRecord, "slug" | "label" | "menuGroup" | "template" | "kind">;
 
@@ -87,15 +94,68 @@ function ext(slug: string, label: string, url: string) {
 /** All first-party catalog tools (spec §3 minimum). */
 export const TOOL_DEFINITIONS: ToolRecord[] = [
   // A — category landings
-  conv("video-converter", "Video Converter", "video", { template: "category", inputHints: "MP4, MOV, AVI, MKV", accept: "video/*" }),
-  conv("audio-converter", "Audio Converter", "audio", { template: "category", accept: "audio/*" }),
-  conv("mp3-converter", "MP3 Converter", "audio", { template: "category", accept: "audio/*" }),
-  conv("mp4-converter", "MP4 Converter", "video", { template: "category", accept: "video/*" }),
-  conv("image-converter", "Image Converter", "image", { template: "category", accept: "image/*" }),
-  conv("svg-converter", "SVG Converter", "image", { template: "category", accept: "image/*,.svg" }),
-  conv("pdf-converter", "PDF Converter", "pdf", { template: "category", accept: ".pdf,application/pdf" }),
-  conv("document-converter", "Document Converter", "word", { template: "category" }),
-  conv("ebook-converter", "Ebook Converter", "pdf", { template: "category" }),
+  conv("video-converter", "Video Converter", "video", {
+    template: "category",
+    inputHints: "MP4, MOV, AVI, MKV, WEBM",
+    accept: "video/*",
+    outputFormats: [...VIDEO_OUTPUTS],
+    defaultOutput: "MP4",
+    tagline: "Convert videos online, for free.",
+    execution: "demo",
+  }),
+  conv("audio-converter", "Audio Converter", "audio", {
+    template: "category",
+    accept: "audio/*",
+    inputHints: "MP3, WAV, OGG, M4A, FLAC",
+    outputFormats: [...AUDIO_OUTPUTS],
+    defaultOutput: "MP3",
+    tagline: "Convert audio online, for free.",
+  }),
+  conv("mp3-converter", "MP3 Converter", "audio", {
+    template: "category",
+    accept: "audio/*",
+    outputFormats: [...AUDIO_OUTPUTS],
+    defaultOutput: "MP3",
+  }),
+  conv("mp4-converter", "MP4 Converter", "video", {
+    template: "category",
+    accept: "video/*",
+    outputFormats: [...VIDEO_OUTPUTS],
+    defaultOutput: "MP4",
+  }),
+  conv("image-converter", "Image Converter", "image", {
+    template: "category",
+    accept: "image/*",
+    inputHints: "JPG, PNG, WEBP, HEIC, GIF, BMP, SVG, TIFF",
+    outputFormats: [...IMAGE_OUTPUTS],
+    defaultOutput: "JPG",
+    tagline: "Convert images online, for free.",
+    execution: "browser-local",
+    convertLabel: "Convert",
+  }),
+  conv("svg-converter", "SVG Converter", "image", {
+    template: "category",
+    accept: "image/*,.svg",
+    outputFormats: ["PNG", "JPG", "WEBP", "SVG", "PDF"],
+    defaultOutput: "PNG",
+  }),
+  conv("pdf-converter", "PDF Converter", "pdf", {
+    template: "category",
+    accept: ".pdf,application/pdf",
+    outputFormats: [...PDF_OUTPUTS],
+    defaultOutput: "PDF",
+    tagline: "Convert PDFs online, for free.",
+  }),
+  conv("document-converter", "Document Converter", "word", {
+    template: "category",
+    outputFormats: [...DOCUMENT_OUTPUTS],
+    defaultOutput: "PDF",
+  }),
+  conv("ebook-converter", "Ebook Converter", "pdf", {
+    template: "category",
+    outputFormats: ["EPUB", "MOBI", "PDF", "AZW3"],
+    defaultOutput: "EPUB",
+  }),
   conv("archive-converter", "Archive Converter", "utility", { template: "category", category: "convert" }),
 
   // B — pairs (from existing catalog)

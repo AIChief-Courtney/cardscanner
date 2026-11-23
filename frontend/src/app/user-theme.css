@@ -1741,3 +1741,133 @@
     grid-template-columns: 1fr;
   }
 }
+
+.tool-breadcrumb ol {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.tool-breadcrumb li + li::before {
+  content: "›";
+  margin-right: 8px;
+}
+
+.output-format-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.output-format-chip {
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #fff;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.output-format-chip--active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.output-format-select {
+  display: none;
+}
+
+.tool-browser-local-banner {
+  background: rgb(13 148 136 / 12%);
+  border: 1px solid rgb(13 148 136 / 35%);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.tool-terms-line {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 10px;
+}
+
+.tool-progress {
+  margin: 12px 0;
+  background: #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  height: 32px;
+}
+
+.tool-progress-bar {
+  background: var(--accent);
+  height: 100%;
+  transition: width 0.2s ease;
+}
+
+.tool-progress span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.related-tools-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.tool-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.tool-feature-card h3 {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.tool-queue-row--responsive {
+  grid-template-columns: 40px 1fr auto auto auto auto;
+}
+
+.tool-queue-format-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .output-format-select {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .output-format-chips {
+    display: none;
+  }
+
+  .tool-queue-row--responsive {
+    grid-template-columns: 36px 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 6px;
+  }
+
+  .tool-queue-format,
+  .tool-queue-format-label {
+    grid-column: 1 / -1;
+  }
+}
