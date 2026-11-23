@@ -1,0 +1,16 @@
+---
+description: Restart or start the dev server after meaningful project changes
+alwaysApply: true
+---
+
+# Run dev after updates
+
+After you change application code, config, env examples, Prisma schema, or dependencies in this repo:
+
+1. Ensure the app is running: from repo root, `npm run dev` (Next.js frontend workspace).
+2. If a dev server may already be running, check terminals first; avoid duplicate servers when port 3000 is taken (kill the old process or use the existing one).
+3. If you changed `package.json`, run `npm install` before `npm run dev`.
+4. If you changed Prisma schema or migrations, run `npm run db:generate` and `npm run db:migrate` before or alongside dev.
+5. Tell the user which URL is live (typically http://localhost:3000).
+
+Next.js hot-reloads most edits; still start or verify dev is running at the end of a task that touched the runnable app so the user can try changes immediately.
