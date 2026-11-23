@@ -40,7 +40,7 @@ export default async function ToolRoutePage({ params }: Props) {
 
   return (
     <>
-      <Header signedIn={signedIn} admin={admin} />
+      {!fcEmbed && <Header signedIn={signedIn} admin={admin} />}
       {fcEmbed ? <ToolFreeConvertPage meta={tool} /> : <ToolConverterPage meta={tool} />}
       {!fcEmbed && <SiteFooter signedIn={signedIn} admin={admin} />}
     </>
