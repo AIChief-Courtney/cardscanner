@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { ArrowDownToLine, ChevronDown, Cloud, FilePlus, Folder, Link2, PackageOpen, Triangle } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import styles from "./dashboard.module.css";
 
@@ -34,6 +34,21 @@ export function ImageConverter() {
   const [importError, setImportError] = useState("");
   const [loading, setLoading] = useState(false);
   const cloudSource = cloudSources.find(({ id }) => id === source);
+
+  useEffect(() => {
+    function applyOutputLink() {
+      const output = window.location.hash;
+      if (output === "#output-png" || output === "#output-jpg") {
+        setFormat(output === "#output-png" ? "png" : "jpg");
+        window.history.replaceState(window.history.state, "", "#converter");
+        document.getElementById("converter")?.scrollIntoView();
+      }
+    }
+
+    applyOutputLink();
+    window.addEventListener("hashchange", applyOutputLink);
+    return () => window.removeEventListener("hashchange", applyOutputLink);
+  }, []);
 
   function selectFile(candidate?: File) {
     if (!candidate) return;
@@ -193,7 +208,7 @@ export function ImageConverter() {
           )}
         </div>
         <p>{file?.name ?? "Drop a JPG, PNG, or WebP image here"}</p>
-        <small>Your files are processed on your device. <button className={styles.pasteLink} type="button" disabled={busy} onClick={() => openImport("clipboard")}>Paste image</button></small>
+        <small>Your files are processed on your device. <button id="paste-image" className={styles.pasteLink} type="button" disabled={busy} onClick={() => openImport("clipboard")}>Paste image</button></small>
       </div>
 
       <dialog ref={importDialog} className={styles.importDialog} aria-labelledby="import-heading"

@@ -1,7 +1,7 @@
-﻿import { Cloud, File, Globe, LockKeyhole, Shield, Wallet } from "lucide-react";
+import { Cloud, File, Globe, LockKeyhole, Shield, Wallet } from "lucide-react";
 import { formatUsd } from "@/lib/money";
 import { ImageConverter } from "./image-converter";
-import { Header } from "./brand";
+import { DashboardHeader } from "./dashboard-header";
 import styles from "./dashboard.module.css";
 
 const features = [
@@ -13,9 +13,7 @@ const features = [
 export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: string }) {
   return (
     <div className={styles.shell}>
-      <div className={styles.topbar}>
-        <Header signedIn dashboard />
-      </div>
+      <DashboardHeader />
 
       <main id="main-content" className={styles.workspace}>
         <div className={styles.rail} aria-hidden="true" />

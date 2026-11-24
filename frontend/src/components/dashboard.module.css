@@ -1,4 +1,4 @@
-﻿.shell {
+.shell {
   --ink: #202c40;
   --violet: #7177f5;
   min-height: 100vh;
@@ -11,59 +11,117 @@
   position: sticky;
   top: 0;
   z-index: 5;
+  background: #fff;
   box-shadow: 0 5px 16px rgb(22 34 54 / 7%);
 }
 
-.topbar :global(.header--fc .header-inner.header-inner--fc) {
-  width: min(100%, 870px);
-  min-height: 38px;
-  padding: 5px 18px;
-  gap: clamp(12px, 5vw, 48px);
+.navFrame {
+  position: relative;
+  width: min(calc(100% - 20px), 894px);
+  margin-inline: auto;
+  background: #fff;
+  border-radius: 3px;
 }
 
-.topbar :global(.brand--fc) { font-size: 14px; gap: 5px; }
+.topbar[data-open="true"] .navFrame {
+  z-index: 1;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+}
+
+.navBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 40%);
+}
+
+.navRow {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 5vw, 48px);
+  min-height: 38px;
+  padding: 5px 14px;
+}
+
+.topbar :global(.brand--fc) { font-size: 14px; gap: 5px; white-space: nowrap; }
 .topbar :global(.brand-icon--fc) { width: 17px; height: 17px; background: var(--violet); }
 .topbar :global(.brand-icon--fc svg) { width: 10px; height: 10px; }
 .topbar :global(.brand-word-fc-accent) { color: #555bdd; }
 
-.topbar :global(.dashboard-nav) {
+.navTabs, .navAccount {
   display: flex;
-  gap: clamp(12px, 3vw, 26px);
+  align-items: center;
+  gap: clamp(10px, 2.5vw, 26px);
   font-size: 11px;
+  white-space: nowrap;
 }
 
-.topbar :global(.dashboard-nav details) { position: relative; }
-.topbar :global(.dashboard-nav summary) {
+.navTabs button, .navAccount button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.navTabs button[aria-expanded="true"], .navTabs button:hover { color: #5359e0; }
+.navTabs [aria-disabled] { color: #626975; }
+.navAccount { margin-left: auto; gap: 12px; }
+.navAccount .searchToggle { justify-content: center; width: 27px; height: 27px; border-radius: 50%; background: #f2f2f2; }
+.navAccount .logout { padding: 4px 6px; border: 1px solid var(--violet); border-radius: 3px; color: #484ec9; }
+
+.megaMenu, .toolSearch {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: min(75vh, 440px);
+  overflow: auto;
+  padding: 0 14px 14px;
+  border-radius: 0 0 3px 3px;
+  background: #fff;
+}
+
+.megaMenu {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  font-size: 11px;
+}
+.megaMenu[data-menu="Compress"], .megaMenu[data-menu="API"] { grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 2fr); }
+.megaMenu[data-menu="Tools"] { grid-template-columns: repeat(2, minmax(0, 1fr)) minmax(0, 3fr); }
+
+.menuCategory h2 {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding-block: 6px;
-  cursor: pointer;
-  list-style: none;
+  min-height: 44px;
+  margin: 0;
+  padding: 6px 8px;
+  border-block: 1px solid #e1e5ee;
+  font-size: 11px;
 }
-.topbar :global(.dashboard-nav summary::-webkit-details-marker) { display: none; }
-.topbar :global(.dashboard-nav details > div) {
-  position: absolute;
-  top: 100%;
-  left: -12px;
-  min-width: 155px;
-  padding: 4px;
-  border: 1px solid #e1e3ef;
-  border-radius: 4px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgb(22 34 54 / 12%);
-}
-.topbar :global(.dashboard-nav a) { display: block; padding: 8px; border-radius: 3px; white-space: nowrap; }
-.topbar :global(.dashboard-nav a:hover) { background: #eeeef4; }
 
-.topbar :global(.fc-login-link),
-.topbar :global(.fc-logout-link) { font-size: 11px; padding: 4px 6px; white-space: nowrap; }
+.menuCategory h2 svg { flex-shrink: 0; }
+.menuCategory ul, .toolSearch ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.menuCategory + .menuCategory ul, .menuCategory + .menuCategory h2 { border-left: 1px solid #e1e5ee; }
+.menuCategory ul { height: calc(100% - 50px); }
+.menuCategory :is(a, span), .toolSearch a { display: block; padding: 7px 12px; }
+.menuCategory [aria-disabled] { color: #626975; }
+.menuCategory a:hover, .toolSearch a:hover { background: #eeeef9; color: #484ec9; }
 
-.topbar :global(.fc-logout-link) {
-  color: #484ec9;
-  border: 1px solid var(--violet);
-  border-radius: 3px;
+.megaMenu[data-menu="Tools"] .menuCategory:last-child ul {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template: repeat(7, auto) / repeat(3, minmax(0, 1fr));
+  align-content: start;
 }
+
+.toolSearch { padding-top: 12px; border-top: 1px solid #e1e5ee; font-size: 13px; }
+.toolSearch input { width: 100%; padding: 8px 10px; border: 1px solid #c4c8dd; border-radius: 4px; font: inherit; }
+.toolSearch li a { padding-inline: 6px; }
 
 .workspace {
   display: grid;
@@ -300,7 +358,7 @@
 
 @media (max-width: 650px) {
   .workspace { grid-template-columns: minmax(0, 487px); }
-  .rail, .topbar :global(.dashboard-nav) { display: none; }
+  .rail { display: none; }
   .features { padding-top: 34px; min-height: auto; }
   .footer { min-height: 0; }
   .footerInner { min-height: 230px; }
@@ -311,4 +369,18 @@
   .features article { text-align: left; }
   .features h2 { min-height: 0; margin: 4px 0; }
   .footerNav { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 650px) {
+  .navRow { flex-wrap: wrap; gap: 4px 12px; }
+  .navTabs { order: 3; width: 100%; justify-content: space-between; }
+  .megaMenu[data-menu] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .megaMenu[data-menu="Tools"] .menuCategory:last-child { grid-column: 1 / -1; }
+  .menuCategory ul { height: auto; }
+}
+
+@media (max-width: 375px) {
+  .navRow { padding-inline: 6px; }
+  .navAccount { gap: 6px; }
+  .megaMenu[data-menu="Tools"] .menuCategory:last-child ul { display: block; }
 }
