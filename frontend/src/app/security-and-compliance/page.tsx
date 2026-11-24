@@ -1,12 +1,13 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  Activity, CloudCog, DatabaseBackup, FileLock2, FileCheck2, Globe, LockKeyhole, MonitorCheck,
+  Activity, CloudCog, DatabaseBackup, FileLock2, FileCheck2, LockKeyhole, MonitorCheck,
   Network, Phone, Server, ShieldCheck, ShieldEllipsis, ThumbsUp, UserRoundCheck, Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { DashboardHeader } from "@/components/dashboard-header";
+import { ReferenceFooter } from "@/components/reference-footer";
 import { safeHeaderUser } from "@/lib/safe-session";
 import shell from "@/components/dashboard.module.css";
 import styles from "./page.module.css";
@@ -84,17 +85,6 @@ const practices: SecurityItem[] = [
   },
 ];
 
-const referenceFooter = [
-  ["Video Converter", "MP4 Converter", "Video to GIF", "MOV to MP4", "Video Converter"],
-  ["Audio Converter", "MP3 Converter", "MP4 to MP3", "Video to MP3", "Audio Converter"],
-  ["Image Converter", "JPG to PDF", "PDF to JPG", "HEIC to JPG", "Image to PDF", "Image Converter"],
-  ["Document & Ebook", "PDF to Word", "EPUB to PDF", "EPUB to MOBI", "Document Converter"],
-  ["Archive & Time", "RAR to Zip", "PST to EST", "CST to EST", "Archive Converter"],
-  ["Unit Converter", "Lbs to Kg", "Kg to Lbs", "Feet to Meters", "Unit Converter"],
-  ["Web Apps", "Collage Maker", "Image Resizer", "Crop Image", "Color Picker"],
-  ["Mobile Apps", "Collage Maker Android", "Collage Maker iOS", "Image Converter Android", "Image Converter iOS"],
-];
-
 function SecuritySection({ id, title, items }: { id: string; title: string; items: SecurityItem[] }) {
   return (
     <section className={styles.section} aria-labelledby={id}>
@@ -136,29 +126,7 @@ export default async function SecurityAndCompliancePage() {
         </div>
       </main>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <div className={styles.footerGrid} aria-label="FreeConvert reference catalog">
-            {referenceFooter.map(([title, ...items]) => (
-              <section key={title}>
-                <h2>{title}</h2>
-                <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
-              </section>
-            ))}
-          </div>
-          <nav className={styles.footerLinks} aria-label="Footer">
-            <Link href="/">Home</Link>
-            <Link href="/dashboard">Dashboard</Link>
-            <Link href="/security-and-compliance" aria-current="page">Security and Compliance</Link>
-            <a href="https://status.freeconvert.com/">FreeConvert Status</a>
-          </nav>
-          <div className={styles.footerBottom}>
-            <Link href="/"><strong>OnlineConvert</strong></Link>
-            <small>© {new Date().getFullYear()} OnlineConvert</small>
-            <span><Globe size={13} aria-hidden /> English</span>
-          </div>
-        </div>
-      </footer>
+      <ReferenceFooter currentPage />
     </div>
   );
 }

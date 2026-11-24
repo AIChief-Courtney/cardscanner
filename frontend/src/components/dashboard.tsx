@@ -1,14 +1,15 @@
-import { Cloud, File, Globe, LockKeyhole, Shield, Wallet } from "lucide-react";
+import { Cloud, Database, File, FileLock2, LockKeyhole, Shield, Wallet } from "lucide-react";
 import Link from "next/link";
 import { formatUsd } from "@/lib/money";
 import { ImageConverter } from "./image-converter";
 import { DashboardHeader } from "./dashboard-header";
+import { ReferenceFooter } from "./reference-footer";
 import styles from "./dashboard.module.css";
 
 const features = [
-  { icon: File, title: "Convert Images", text: "Change your images between JPG, PNG, and WebP. Choose a file from your device, select an output format, and download the result." },
-  { icon: Cloud, title: "Works Anywhere", text: "Use OnlineConvert on your desktop, laptop, or phone. Open the converter in your browser to get started." },
-  { icon: Shield, title: "Private by Design", text: "Your browser processes the image and saves the converted file directly to your device." },
+  { icon: File, title: "Convert Any File", text: "FreeConvert supports more than 1500 file conversions. You can convert videos, images, audio files, or e-books. There are tons of Advanced Options to fine-tune your conversions." },
+  { icon: Cloud, title: "Works Anywhere", text: "FreeConvert is an online file converter. So it works on Windows, Mac, Linux, or any mobile device. All major browsers are supported. Simply upload a file and select a target format." },
+  { icon: Shield, title: "Privacy Guaranteed", text: "We know that file security and privacy are important to you. That is why we use 256-bit SSL encryption when transferring files and automatically delete them after 8 hours." },
 ];
 
 export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: string }) {
@@ -27,6 +28,7 @@ export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: st
           <ImageConverter />
 
           <section id="features" className={styles.features} aria-label="Converter features">
+            <span className={styles.referenceLabel}>FreeConvert reference content</span>
             {features.map(({ icon: Icon, title, text }) => (
               <article key={title}>
                 <Icon size={23} strokeWidth={1.25} aria-hidden />
@@ -39,13 +41,13 @@ export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: st
           <section id="privacy" className={styles.privacy} aria-labelledby="privacy-heading">
             <div>
               <h2 id="privacy-heading">Your Data, Our Priority</h2>
-              <p>OnlineConvert processes images locally in your browser. Your selected image stays on your device throughout the conversion.</p>
+              <p>At FreeConvert, we go beyond just converting files—we protect them. Our robust security framework ensures that your data is always safe, whether you're converting an image, video, or document. With advanced encryption, secure data centers, and vigilant monitoring, we've covered every aspect of your data's safety.</p>
               <Link href="/security-and-compliance">Learn more about our commitment to security</Link>
             </div>
             <ul>
-              <li><LockKeyhole size={17} aria-hidden /> Local processing</li>
-              <li><Shield size={17} aria-hidden /> Direct downloads</li>
-              <li><Globe size={17} aria-hidden /> Browser-based conversion</li>
+              <li><FileLock2 size={17} aria-hidden /> SSL/TLS Encryption</li>
+              <li><Database size={17} aria-hidden /> Secured Data Centers</li>
+              <li><LockKeyhole size={17} aria-hidden /> Access Control and Authentication</li>
             </ul>
           </section>
 
@@ -58,21 +60,9 @@ export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: st
         <div className={styles.rail} aria-hidden="true" />
       </main>
 
-      <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <nav aria-label="Footer navigation" className={styles.footerNav}>
-            <div><h2>Convert</h2><a href="#converter">Image converter</a></div>
-            <div><h2>Features</h2><a href="#features">Supported formats</a></div>
-            <div><h2>Privacy</h2><a href="#privacy">Local conversion</a></div>
-            <div><h2>Account</h2><a href="#account">Account balance</a></div>
-          </nav>
-          <div className={styles.footerBottom}>
-            <a href="#main-content"><strong>OnlineConvert</strong></a>
-            <small>© {new Date().getFullYear()} OnlineConvert</small>
-            <span><Globe size={13} aria-hidden /> English</span>
-          </div>
-        </div>
-      </footer>
+      <div className={styles.footerOffset}>
+        <ReferenceFooter />
+      </div>
     </div>
   );
 }
