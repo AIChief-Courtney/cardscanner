@@ -22,7 +22,7 @@ export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: st
         <div className={styles.content}>
           <header className={styles.heading}>
             <h1>File Converter</h1>
-            <p>Convert JPG, PNG, and WebP images online.</p>
+            <p>Easily convert files from one format to another, online.</p>
           </header>
 
           <ImageConverter />

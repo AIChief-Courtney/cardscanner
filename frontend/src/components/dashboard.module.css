@@ -149,114 +149,161 @@
 .heading p { margin: 0; font-size: 13px; }
 .converter, .features, .privacy, .account { scroll-margin-top: 56px; }
 
-.sourceTabs {
+.filePicker {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  list-style: none;
-  margin: 0 0 12px;
-  padding: 0;
-}
-
-.sourceTab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
-  border: 1px solid #c8cee8;
+  position: relative;
+  min-width: 200px;
   border-radius: 4px;
-  background: #fff;
-  color: #4a5570;
-  font: inherit;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
+  box-shadow: 0 6px 14px rgb(87 93 216 / 25%);
+  margin-bottom: 2px;
 }
 
-.sourceTabMuted {
-  background: #f6f7fc;
+.filePicker:has(.sourceMenu) > button:first-child {
+  border-radius: 4px 0 0 0;
 }
 
-.sourceTabActive {
-  border-color: #7177f5;
-  background: #eeeef9;
-  color: #484ec9;
-  box-shadow: inset 0 0 0 1px #7177f5;
+.filePicker:has(.sourceMenu) > button:nth-child(2) {
+  border-radius: 0 4px 0 0;
 }
 
-.sourceTabBadge {
-  font-size: 8px;
-  font-weight: 600;
-  padding: 2px 5px;
-  border-radius: 3px;
-  background: #eceef4;
-  color: #6b7280;
-}
-
-.chooseFiles {
+.filePicker > button,
+.primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   min-height: 39px;
-  padding: 0 16px;
   border: 0;
-  border-radius: 4px;
+  padding: 0 12px;
   background: #7177ef;
   color: #fff;
   font: inherit;
   font-size: 14px;
   font-weight: 700;
-  box-shadow: 0 6px 14px rgb(87 93 216 / 25%);
   cursor: pointer;
 }
 
-.chooseFiles:disabled {
+.filePicker > button:first-child {
+  flex: 1;
+  border-radius: 4px 0 0 4px;
+}
+
+.filePicker > button:nth-child(2) {
+  border-left: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 0 4px 4px 0;
+  padding-inline: 10px;
+}
+
+.filePicker > button[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.filePicker > button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
 
-.linkPanel {
-  min-height: 185px;
-  display: grid;
-  align-content: center;
-  gap: 10px;
-  padding: 18px;
-  border: 2px dashed #bbbcd9;
-  border-radius: 4px;
-  background: #eeeeF4;
+.sourceMenu {
+  position: absolute;
+  z-index: 3;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0 0 4px 4px;
+  background: #7177ef;
+  box-shadow: 0 6px 16px rgb(87 93 216 / 25%);
+}
+
+.sourceMenu button {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 47px;
+  gap: 14px;
+  padding: 0 12px;
+  border: 0;
+  border-top: 1px solid rgb(255 255 255 / 16%);
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
   text-align: left;
 }
 
-.linkPanel form {
+.sourceMenu button:hover {
+  background: #6268db;
+}
+
+.sourceMenu button:focus-visible {
+  outline-offset: -3px;
+  outline-color: #fff;
+}
+
+.termsNote a {
+  color: #484ec9;
+}
+
+.importDialog {
+  width: min(410px, calc(100% - 32px));
+  padding: 24px;
+  border: 1px solid #d1d3ef;
+  border-radius: 8px;
+  color: var(--ink);
+  font-family: inherit;
+}
+
+.importDialog::backdrop {
+  background: rgb(28 43 66 / 42%);
+}
+
+.importDialog h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.importDialog label {
   display: grid;
-  gap: 8px;
-}
-
-.linkPanel label {
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.linkPanel input[type="url"] {
-  width: 100%;
-  min-height: 38px;
-  border: 1px solid #aeb2d4;
-  border-radius: 4px;
-  padding: 8px 10px;
-  font: inherit;
+  gap: 6px;
   font-size: 13px;
 }
 
-.linkHint,
-.importError {
-  margin: 0;
-  font-size: 10px;
+.importDialog input {
+  width: 100%;
+  min-height: 39px;
+  border: 1px solid #aeb2d4;
+  border-radius: 4px;
+  padding: 8px;
+  font: inherit;
+}
+
+.importLead {
+  margin: 0 0 10px;
+  font-size: 13px;
   line-height: 1.45;
 }
 
+.importDialog .primary {
+  margin-top: 12px;
+}
+
 .importError {
+  margin: 10px 0 0;
+  font-size: 13px;
   color: #b42318;
+}
+
+.cancel {
+  border: 0;
+  padding: 8px;
+  margin-top: 4px;
+  color: #484ec9;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .dropZone {
@@ -276,19 +323,9 @@
 .dropZone p { margin: 0; max-width: 100%; overflow-wrap: anywhere; font-size: 10px; }
 .dropZone small { font-size: 9px; color: #535d71; }
 
-.primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-height: 39px;
-  border: 0;
-  padding: 0 12px;
+.controls .primary {
   background: #585ee0;
-  color: #fff;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  border-radius: 4px;
 }
 
 .controls {

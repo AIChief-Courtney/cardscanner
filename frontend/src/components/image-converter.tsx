@@ -1,8 +1,18 @@
 ﻿"use client";
 
-import { ArrowDownToLine, CloudUpload } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ChevronDown,
+  Cloud,
+  FilePlus,
+  Folder,
+  Link2,
+  PackageOpen,
+  Triangle,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import Link from "next/link";
 import { imageLimitText, imageMime, maxImageBytes, readImageBytes } from "@/lib/image-import";
 import styles from "./dashboard.module.css";
 
@@ -13,27 +23,30 @@ const formats = {
 } as const;
 type Format = keyof typeof formats;
 
-type SourceTab = "device" | "dropbox" | "drive" | "onedrive" | "url";
+type ImportSource = "url" | "dropbox" | "drive" | "onedrive";
 
-const SOURCE_TABS: { id: SourceTab; label: string; cloud?: boolean }[] = [
-  { id: "device", label: "From Device" },
-  { id: "dropbox", label: "Dropbox", cloud: true },
-  { id: "drive", label: "Google Drive", cloud: true },
-  { id: "onedrive", label: "OneDrive", cloud: true },
-  { id: "url", label: "URL" },
+const cloudSources = [
+  { id: "dropbox" as const, label: "Dropbox", icon: PackageOpen },
+  { id: "drive" as const, label: "Google Drive", icon: Triangle },
+  { id: "onedrive" as const, label: "OneDrive", icon: Cloud },
 ];
 
 export function ImageConverter() {
   const picker = useRef<HTMLInputElement>(null);
+  const importDialog = useRef<HTMLDialogElement>(null);
+  const sourceToggle = useRef<HTMLButtonElement>(null);
   const [file, setFile] = useState<File>();
   const [format, setFormat] = useState<Format>("png");
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [tab, setTab] = useState<SourceTab>("device");
+  const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [importSource, setImportSource] = useState<ImportSource>("url");
   const [linkUrl, setLinkUrl] = useState("");
   const [importError, setImportError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const cloudSource = cloudSources.find(({ id }) => id === importSource);
 
   useEffect(() => {
     function applyOutputLink() {
@@ -49,11 +62,6 @@ export function ImageConverter() {
     window.addEventListener("hashchange", applyOutputLink);
     return () => window.removeEventListener("hashchange", applyOutputLink);
   }, []);
-
-  useEffect(() => {
-    setLinkUrl("");
-    setImportError("");
-  }, [tab]);
 
   function selectFile(candidate?: File) {
     if (!candidate) return;
@@ -71,7 +79,16 @@ export function ImageConverter() {
     setMessage("");
   }
 
-  async function importFromLink(event: FormEvent) {
+  function openImport(nextSource: ImportSource) {
+    setSourcesOpen(false);
+    setImportSource(nextSource);
+    setImportError("");
+    setLinkUrl("");
+    importDialog.current?.showModal();
+    requestAnimationFrame(() => importDialog.current?.querySelector<HTMLInputElement>("input[type=url]")?.focus());
+  }
+
+  async function importFromLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (loading) return;
 
@@ -82,7 +99,7 @@ export function ImageConverter() {
       return;
     }
 
-    const cloudProvider = tab === "dropbox" || tab === "drive" || tab === "onedrive" ? tab : null;
+    const cloudProvider = cloudSource?.id ?? null;
 
     setLoading(true);
     setImportError("");
@@ -119,7 +136,7 @@ export function ImageConverter() {
       const lastSegment = url.pathname.split("/").pop() ?? "";
       const name = /\.(jpe?g|png|webp)$/i.test(lastSegment) ? lastSegment.replace(/\.[^.]+$/, "") : "image";
       selectFile(new File([blob], `${name}.${outFormat}`, { type: mime ?? "" }));
-      setTab("device");
+      importDialog.current?.close();
       setLinkUrl("");
     } catch (error) {
       setImportError(
@@ -176,79 +193,124 @@ export function ImageConverter() {
     }
   }
 
-  const showDeviceDrop = tab === "device";
-
   return (
     <section id="converter" className={styles.converter} aria-label="Convert an image">
-      <ul className={styles.sourceTabs} role="tablist" aria-label="Upload source">
-        {SOURCE_TABS.map(({ id, label, cloud }) => (
-          <li key={id} role="presentation">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={tab === id}
-              className={`${styles.sourceTab} ${tab === id ? styles.sourceTabActive : styles.sourceTabMuted}`}
-              onClick={() => setTab(id)}
-            >
-              {label}
-              {cloud ? <span className={styles.sourceTabBadge}>Integration required</span> : null}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div
+        className={styles.dropZone}
+        data-dragging={dragging}
+        onDragOver={(event) => {
+          event.preventDefault();
+          if (!busy) setDragging(true);
+        }}
+        onDragLeave={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+          setDragging(false);
+          if (!busy) selectFile(event.dataTransfer.files[0]);
+        }}
+      >
+        <input
+          ref={picker}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+          hidden
+          onChange={(event) => {
+            selectFile(event.currentTarget.files?.[0]);
+            event.currentTarget.value = "";
+          }}
+        />
 
-      {showDeviceDrop ? (
         <div
-          className={styles.dropZone}
-          data-dragging={dragging}
-          onDragOver={(event) => {
-            event.preventDefault();
-            if (!busy) setDragging(true);
+          className={styles.filePicker}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setSourcesOpen(false);
           }}
-          onDragLeave={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
-          }}
-          onDrop={(event) => {
-            event.preventDefault();
-            setDragging(false);
-            if (!busy) selectFile(event.dataTransfer.files[0]);
+          onKeyDown={(event) => {
+            if (event.key === "Escape" && sourcesOpen) {
+              setSourcesOpen(false);
+              sourceToggle.current?.focus();
+            }
           }}
         >
-          <input
-            ref={picker}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
-            hidden
-            onChange={(event) => {
-              selectFile(event.currentTarget.files?.[0]);
-              event.currentTarget.value = "";
-            }}
-          />
           <button
             type="button"
-            className={styles.chooseFiles}
             disabled={busy}
-            onClick={() => picker.current?.click()}
+            onClick={() => {
+              setSourcesOpen(false);
+              picker.current?.click();
+            }}
           >
-            <CloudUpload size={16} aria-hidden />
+            <FilePlus size={16} aria-hidden />
             Choose Files
           </button>
-          <p>
-            {file?.name ??
-              (dragging ? "Drop a JPG, PNG, or WebP image here" : `Max file size ${imageLimitText}. JPG, PNG, and WebP.`)}
-          </p>
-          <small>Only import files you have the right to use.</small>
+          <button
+            ref={sourceToggle}
+            type="button"
+            aria-label="More file sources"
+            aria-expanded={sourcesOpen}
+            disabled={busy}
+            onClick={() => setSourcesOpen((open) => !open)}
+          >
+            <ChevronDown size={16} aria-hidden />
+          </button>
+          {sourcesOpen && (
+            <div className={styles.sourceMenu} role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setSourcesOpen(false);
+                  picker.current?.click();
+                }}
+              >
+                <Folder size={14} aria-hidden />
+                From Device
+              </button>
+              {cloudSources.map(({ id, label, icon: Icon }) => (
+                <button key={id} type="button" role="menuitem" onClick={() => openImport(id)}>
+                  <Icon size={14} aria-hidden />
+                  From {label}
+                </button>
+              ))}
+              <button type="button" role="menuitem" onClick={() => openImport("url")}>
+                <Link2 size={14} aria-hidden />
+                From Url
+              </button>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className={styles.linkPanel} role="tabpanel">
-          <form onSubmit={importFromLink}>
-            <label htmlFor="import-link">
-              {tab === "url"
-                ? "Paste a public image URL"
-                : `Paste a ${SOURCE_TABS.find((t) => t.id === tab)?.label ?? "cloud"} share link`}
-            </label>
+
+        <p>
+          {file?.name ??
+            (dragging ? "Drop a JPG, PNG, or WebP image here" : `Max file size ${imageLimitText}. JPG, PNG, and WebP.`)}
+        </p>
+        <small className={styles.termsNote}>
+          By proceeding, you confirm you own the rights to your files and agree to our{" "}
+          <Link href="/security-and-compliance">Terms of Use</Link>.
+        </small>
+      </div>
+
+      <dialog
+        ref={importDialog}
+        className={styles.importDialog}
+        aria-labelledby="import-heading"
+        onCancel={(event) => {
+          if (loading) event.preventDefault();
+        }}
+        onClose={() => sourceToggle.current?.focus()}
+      >
+        <h2 id="import-heading">Import from {cloudSource?.label ?? "URL"}</h2>
+        <form onSubmit={importFromLink}>
+          {cloudSource && (
+            <p className={styles.importLead}>
+              Paste a share link to a single image with public access and downloads enabled.
+            </p>
+          )}
+          <label>
+            {cloudSource ? `${cloudSource.label} share link` : "Public image URL"}
             <input
-              id="import-link"
               type="url"
               name="url"
               value={linkUrl}
@@ -257,22 +319,20 @@ export function ImageConverter() {
               required
               disabled={loading}
             />
-            <button type="submit" className={styles.primary} disabled={loading || !linkUrl.trim()}>
-              {loading ? "Importing…" : "Add file"}
-            </button>
-          </form>
-          {importError && (
-            <p className={styles.importError} role="alert">
-              {importError}
-            </p>
-          )}
-          <p className={styles.linkHint}>
-            {tab === "url"
-              ? "Direct link to JPG, PNG, or WebP. Some sites block browser downloads."
-              : "Use a share link with download access. Sign-in is required for cloud imports."}
+          </label>
+          <button type="submit" className={styles.primary} disabled={loading || !linkUrl.trim()}>
+            {loading ? "Importing…" : "Import image"}
+          </button>
+        </form>
+        {importError && (
+          <p className={styles.importError} role="alert">
+            {importError}
           </p>
-        </div>
-      )}
+        )}
+        <button className={styles.cancel} type="button" disabled={loading} onClick={() => importDialog.current?.close()}>
+          Cancel
+        </button>
+      </dialog>
 
       {file && (
         <div className={styles.controls}>
@@ -281,7 +341,7 @@ export function ImageConverter() {
             <select value={format} disabled={busy} onChange={(event) => setFormat(event.target.value as Format)}>
               <option value="png">PNG</option>
               <option value="jpg">JPG</option>
-              <option value="webp">WebP</option>
+              <option value="webp">WEBP</option>
             </select>
           </label>
           <button className={styles.primary} type="button" disabled={!file || busy} onClick={convert}>
