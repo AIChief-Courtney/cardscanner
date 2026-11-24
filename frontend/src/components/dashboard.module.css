@@ -111,6 +111,7 @@
 .filePicker {
   display: flex;
   position: relative;
+  min-width: 167px;
   border-radius: 4px;
   box-shadow: 0 6px 14px rgb(87 93 216 / 25%);
   margin-bottom: 2px;
@@ -131,38 +132,41 @@
   font-weight: 700;
 }
 
-.filePicker > button:first-child { border-radius: 4px 0 0 4px; }
+.filePicker > button:first-child { flex: 1; border-radius: 4px 0 0 4px; }
 .filePicker > button:nth-child(2) { border-left: 1px solid #a8abff; border-radius: 0 4px 4px 0; }
+.filePicker > button { background: #7177ef; }
+.filePicker > button[aria-expanded="true"] svg { transform: rotate(180deg); }
 
 .filePicker .source {
   position: absolute;
   z-index: 2;
-  top: calc(100% + 4px);
+  top: 100%;
   left: 0;
-  min-width: max(100%, 158px);
-  padding: 4px;
-  border-radius: 4px;
-  border: 1px solid #d1d3ef;
-  color: var(--ink);
-  background: #fff;
-  box-shadow: 0 4px 14px rgb(22 34 54 / 14%);
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0 0 4px 4px;
+  background: #7177ef;
+  box-shadow: 0 6px 16px rgb(87 93 216 / 25%);
 }
 
 .source button {
   display: flex;
   justify-content: flex-start;
   width: 100%;
-  min-height: 34px;
-  gap: 8px;
-  padding: 0 8px;
-  border-radius: 3px;
-  background: #fff;
-  color: var(--ink);
+  min-height: 47px;
+  gap: 14px;
+  padding: 0 12px;
+  border-top: 1px solid rgb(255 255 255 / 16%);
+  background: transparent;
+  color: #fff;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.source button:hover { background: #eeeef4; }
+.source button:hover { background: #6268db; }
+.source button:focus-visible { outline-offset: -3px; outline-color: #fff; }
+.pasteLink { border: 0; padding: 0; background: transparent; color: #484ec9; font: inherit; text-decoration: underline; }
 
 .importDialog {
   width: min(410px, calc(100% - 32px));

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ArrowDownToLine, ChevronDown, Clipboard, FilePlus, Link2, Monitor } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, Cloud, FilePlus, Folder, Link2, PackageOpen, Triangle } from "lucide-react";
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import styles from "./dashboard.module.css";
@@ -12,6 +12,14 @@ const formats = {
 } as const;
 type Format = keyof typeof formats;
 
+const cloudSources = [
+  { id: "dropbox", label: "Dropbox", icon: PackageOpen },
+  { id: "drive", label: "Google Drive", icon: Triangle },
+  { id: "onedrive", label: "OneDrive", icon: Cloud },
+] as const;
+
+type ImportSource = "url" | "clipboard" | (typeof cloudSources)[number]["id"];
+
 export function ImageConverter() {
   const picker = useRef<HTMLInputElement>(null);
   const importDialog = useRef<HTMLDialogElement>(null);
@@ -22,9 +30,10 @@ export function ImageConverter() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
-  const [source, setSource] = useState<"url" | "clipboard">("url");
+  const [source, setSource] = useState<ImportSource>("url");
   const [importError, setImportError] = useState("");
   const [loading, setLoading] = useState(false);
+  const cloudSource = cloudSources.find(({ id }) => id === source);
 
   function selectFile(candidate?: File) {
     if (!candidate) return;
@@ -37,7 +46,7 @@ export function ImageConverter() {
     setMessage("");
   }
 
-  function openImport(nextSource: "url" | "clipboard") {
+  function openImport(nextSource: ImportSource) {
     setSourcesOpen(false);
     setSource(nextSource);
     setImportError("");
@@ -175,23 +184,26 @@ export function ImageConverter() {
                 setSourcesOpen(false);
                 sourceToggle.current?.focus();
                 picker.current?.click();
-              }}><Monitor size={15} aria-hidden /> From device</button>
-              <button type="button" onClick={() => openImport("url")}><Link2 size={15} aria-hidden /> From URL</button>
-              <button type="button" onClick={() => openImport("clipboard")}><Clipboard size={15} aria-hidden /> From clipboard</button>
+              }}><Folder size={14} aria-hidden /> From Device</button>
+              {cloudSources.map(({ id, label, icon: Icon }) => (
+                <button key={id} type="button" onClick={() => openImport(id)}><Icon size={14} aria-hidden /> From {label}</button>
+              ))}
+              <button type="button" onClick={() => openImport("url")}><Link2 size={14} aria-hidden /> From URL</button>
             </div>
           )}
         </div>
         <p>{file?.name ?? "Drop a JPG, PNG, or WebP image here"}</p>
-        <small>Your files are processed on your device.</small>
+        <small>Your files are processed on your device. <button className={styles.pasteLink} type="button" disabled={busy} onClick={() => openImport("clipboard")}>Paste image</button></small>
       </div>
 
       <dialog ref={importDialog} className={styles.importDialog} aria-labelledby="import-heading"
         onCancel={(event) => { if (loading) event.preventDefault(); }}
         onClose={() => sourceToggle.current?.focus()}>
-        <h2 id="import-heading">{source === "url" ? "Import from URL" : "Import from clipboard"}</h2>
-        {source === "url" ? (
-          <form onSubmit={importUrl}>
-            <label>Public image URL<input type="url" name="url" required placeholder="https://example.com/image.png" /></label>
+        <h2 id="import-heading">Import from {cloudSource?.label ?? (source === "url" ? "URL" : "clipboard")}</h2>
+        {source !== "clipboard" ? (
+          <form key={source} onSubmit={importUrl}>
+            {cloudSource && <p>Use a public direct image link. If your link opens a preview or requires sign-in, download the image and choose From Device.</p>}
+            <label>{cloudSource ? `${cloudSource.label} image link` : "Public image URL"}<input type="url" name="url" required placeholder="https://" /></label>
             <button type="submit" className={styles.primary} disabled={loading}>{loading ? "Importing…" : "Import image"}</button>
           </form>
         ) : (
