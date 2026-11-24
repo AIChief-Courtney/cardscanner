@@ -1,9 +1,6 @@
-"use client";
-
-import { ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import Link from "next/link";
+import { CreditCard, ShieldCheck, Wallet } from "lucide-react";
 import { formatUsd } from "@/lib/money";
-import { UploadZone } from "@/components/user/upload-zone";
-import { ToolsCatalog } from "@/components/user/tools-catalog";
 
 export function Dashboard({
   email,
@@ -15,97 +12,62 @@ export function Dashboard({
   const initial = (email.trim()[0] ?? "?").toUpperCase();
 
   return (
-    <main id="main-content" className="user-workspace">
-      <header className="dashboard-hero panel-glass" aria-labelledby="dashboard-title">
-        <div className="dashboard-hero-main">
-          <span className="dashboard-hero-badge">Your workspace</span>
-          <h1 id="dashboard-title">Dashboard</h1>
-          <p>
-            Convert, compress, and edit files from the header — FreeConvert-style tools, one account.
-          </p>
-          <div className="dashboard-hero-pills" role="list">
-            <span className="dashboard-hero-pill" role="listitem">
-              Convert
-            </span>
-            <span className="dashboard-hero-pill" role="listitem">
-              Compress
-            </span>
-            <span className="dashboard-hero-pill" role="listitem">
-              Tools
-            </span>
-            <span className="dashboard-hero-pill" role="listitem">
-              API
-            </span>
-          </div>
+    <main id="main-content" className="user-dashboard">
+      <header className="panel user-dashboard-hero">
+        <div className="user-dashboard-hero-text">
+          <span className="eyebrow eyebrow--product">Your workspace</span>
+          <h1>Dashboard</h1>
+          <p>Signed-in home for Card Scanner. More product tools will appear here as you wire them in.</p>
         </div>
-        <aside className="dashboard-hero-account" aria-label="Account summary">
-          <span className="dashboard-hero-avatar" aria-hidden>
+        <div className="user-dashboard-account">
+          <span className="user-dashboard-avatar" aria-hidden>
             {initial}
           </span>
-          <div className="dashboard-hero-account-body">
-            <p className="dashboard-hero-label">Signed in as</p>
-            <p className="dashboard-hero-email">{email}</p>
-            <p className="dashboard-hero-balance">
-              <Wallet size={16} aria-hidden />
-              Balance {formatUsd(balanceUsd)}
-            </p>
+          <div>
+            <p className="user-dashboard-label">Signed in as</p>
+            <p className="user-dashboard-email">{email}</p>
           </div>
-        </aside>
+        </div>
       </header>
 
-      <UploadZone />
+      <div className="user-dashboard-stats">
+        <article className="user-stat-card">
+          <Wallet className="user-stat-icon" size={22} aria-hidden />
+          <div>
+            <p className="user-stat-label">Balance</p>
+            <p className="user-stat-value">{formatUsd(balanceUsd)}</p>
+          </div>
+        </article>
+        <article className="user-stat-card user-stat-card--muted">
+          <ShieldCheck className="user-stat-icon" size={22} aria-hidden />
+          <div>
+            <p className="user-stat-label">Session</p>
+            <p className="user-stat-value" style={{ fontSize: "1rem" }}>
+              Active
+            </p>
+          </div>
+        </article>
+      </div>
 
-      <section className="user-dash-highlights" aria-labelledby="dash-highlights-title">
-        <h2 id="dash-highlights-title" className="sr-only">
-          Highlights
-        </h2>
-        <article className="user-highlight-card">
-          <Sparkles size={20} aria-hidden />
-          <div>
-            <h3>Convert · Compress · Tools</h3>
-            <p>Three header menus — converters, compression, and OCR — each with its own dropdown.</p>
-          </div>
-        </article>
-        <article className="user-highlight-card">
-          <ShieldCheck size={20} aria-hidden />
-          <div>
-            <h3>Secure session</h3>
-            <p>Sign out from the header when you leave a shared device.</p>
-          </div>
-        </article>
+      <section className="panel user-dashboard-tips" aria-labelledby="dash-tips">
+        <h2 id="dash-tips">Next steps</h2>
+        <ul className="help-list">
+          <li>Use the header to sign out on shared devices.</li>
+          <li>Balance updates when billing adapters are connected on the server.</li>
+          <li>Need help? Contact your administrator.</li>
+        </ul>
       </section>
 
-      <ToolsCatalog signedIn />
-
-      <section className="plans-strip panel" id="plans" aria-labelledby="plans-title">
-        <div className="plans-strip-head">
-          <span className="eyebrow eyebrow--product">Plans</span>
-          <h2 id="plans-title">Simple pricing for growing teams</h2>
-          <p>Start free on your dashboard. Upgrade when you need higher limits and priority OCR.</p>
-        </div>
-        <div className="plans-strip-cards">
-          <article className="plan-card">
-            <h3>Free</h3>
-            <p className="plan-price">$0</p>
-            <ul>
-              <li>Core converters</li>
-              <li>Standard upload size</li>
-              <li>Email support</li>
-            </ul>
-            <span className="plan-badge">Current</span>
-          </article>
-          <article className="plan-card plan-card--accent">
-            <h3>Pro</h3>
-            <p className="plan-price">Coming soon</p>
-            <ul>
-              <li>Batch OCR &amp; ID card scans</li>
-              <li>Larger files</li>
-              <li>Priority processing</li>
-            </ul>
-            <button type="button" className="button dark small" disabled>
-              Notify me
-            </button>
-          </article>
+      <section className="user-dashboard-actions" aria-labelledby="dash-actions">
+        <h2 id="dash-actions">Quick links</h2>
+        <div className="user-action-grid">
+          <Link href="/" className="user-action-card">
+            <CreditCard size={20} aria-hidden />
+            <div>
+              <h3>Home</h3>
+              <p>Return to the public landing page.</p>
+            </div>
+          </Link>
         </div>
       </section>
     </main>

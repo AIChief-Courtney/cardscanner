@@ -1,29 +1,14 @@
-# Route coverage matrix
+# App routes (minimal shell)
 
-Generated from `frontend/src/lib/tools/registry.ts` (`buildRouteMatrix()`). Full export: [ROUTE_MATRIX_FULL.md](./ROUTE_MATRIX_FULL.md) via `npx tsx --tsconfig frontend/tsconfig.json frontend/scripts/export-route-matrix.ts`.
+| Path | Purpose |
+| --- | --- |
+| `/` | Landing — sign in / sign up |
+| `/signin`, `/signup` | Authentication |
+| `/dashboard` | Signed-in user home (login required) |
+| `/admin`, `/admin/overview`, `/admin/users`, `/admin/activity` | Admin console |
+| `/api/auth/*`, `/api/register`, `/api/profile/*` | Auth & profile APIs |
+| `/api/admin/*` | Admin APIs |
 
-Reference site: [FreeConvert](https://www.freeconvert.com/) (feature coverage only).
+Legacy `/account/*` and `/profile` redirect to `/dashboard` in middleware.
 
-| Status | Meaning |
-|--------|---------|
-| demo | First-party FileDock page + `DemoConversionAdapter` |
-| external | Labeled outbound link (ImageResizer / ProPDF) |
-| local-only | Bank statement OCR (no FC parity) |
-
-## Verification (this branch)
-
-- `npm run typecheck` (frontend)
-- `npm run build` (frontend)
-- Manual: header mega menus, search (Escape), `/pdf-to-word` queue → demo result → `/dashboard`
-
-Full row export: run a small script importing `buildRouteMatrix()` or inspect registry slugs (100+ tools).
-
-## Integration summary
-
-| Mode | Examples |
-|------|----------|
-| browser-local | Unit/time calculators |
-| demo | Converters, compressors, most PDF/media tools |
-| external | resize-image, edit-pdf, … |
-| integrated | next-auth sign-in → `/dashboard` (`/account/*`, `/profile` redirect) |
-| unavailable | Live API, cloud pickers, payments |
+Removed: FreeConvert proxy, tool registry, and converter/compress/tools marketing pages.

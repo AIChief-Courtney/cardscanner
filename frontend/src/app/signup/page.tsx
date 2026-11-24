@@ -18,11 +18,8 @@ export default async function SignUp() {
         <aside className="auth-aside" aria-labelledby="signup-aside-title">
           <span className="eyebrow eyebrow--product">Card Scanner</span>
           <h2 id="signup-aside-title">Create your free account</h2>
-          <p>
-            One quick form — we sign you in and send you straight to the dashboard with upload and profile tools.
-          </p>
+          <p>One quick form — we sign you in and send you straight to the dashboard.</p>
           <ul className="help-list">
-            <li>Explore the Tools mega menu on any page as a guest.</li>
             <li>Pick a strong password you’ll remember.</li>
             <li>Administrator roles are assigned separately.</li>
           </ul>

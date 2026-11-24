@@ -2,14 +2,14 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "FileDock | Convert, compress, and edit files", template: "%s | FileDock" },
-  description: "FileDock is a demo-first conversion platform with honest adapters, pricing, and account shells.",
-  applicationName: "FileDock",
+  title: { default: "Card Scanner", template: "%s · Card Scanner" },
+  description: "Sign in, manage your balance, and use the Card Scanner dashboard.",
+  applicationName: "Card Scanner",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "FileDock | Convert, compress, and edit files",
-    description: "Guest-friendly workspace, typed tool registry, and labeled demo outputs.",
-    siteName: "FileDock",
+    title: "Card Scanner",
+    description: "User dashboard with sign-in and admin console.",
+    siteName: "Card Scanner",
     type: "website",
   },
 };

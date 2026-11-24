@@ -12,28 +12,21 @@ export function SiteFooter({
       <div className="site-footer-inner">
         <p className="site-footer-tagline">
           <span className="text-gradient text-gradient--blue" style={{ fontWeight: 700 }}>
-            FileDock
+            Card Scanner
           </span>{" "}
-          — {signedIn ? "Your signed-in workspace starts on the dashboard." : "Guest demos in the browser — sign in for history."}
+          — {signedIn ? "Signed-in workspace." : "Sign in to open your dashboard."}
         </p>
         <nav className="site-footer-nav" aria-label="Footer">
-          <Link href="/convert">Convert</Link>
-          <Link href="/compress">Compress</Link>
-          <Link href="/tools">Tools</Link>
-          <Link href="/pricing">Pricing</Link>
-          <Link href="/faq">FAQ</Link>
-          <Link href="/privacy">Privacy (draft)</Link>
-          {!signedIn && <Link href="/">Home</Link>}
-          {signedIn && !admin && <Link href="/dashboard">Dashboard</Link>}
-          {signedIn && admin && <Link href="/admin/overview">Admin</Link>}
           {!signedIn && (
             <>
-              <Link href="/signin">Login</Link>
+              <Link href="/signin">Sign in</Link>
               <Link href="/signup">Sign up</Link>
             </>
           )}
+          {signedIn && !admin && <Link href="/dashboard">Dashboard</Link>}
+          {signedIn && admin && <Link href="/admin/overview">Admin</Link>}
         </nav>
-        <p className="site-footer-copy">© {new Date().getFullYear()} FileDock. All rights reserved.</p>
+        <p className="site-footer-copy">© {new Date().getFullYear()} Card Scanner. All rights reserved.</p>
       </div>
     </footer>
   );

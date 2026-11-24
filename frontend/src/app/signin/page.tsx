@@ -19,13 +19,10 @@ export default async function SignIn() {
         <aside className="auth-aside" aria-labelledby="signin-aside-title">
           <span className="eyebrow eyebrow--product">Card Scanner</span>
           <h2 id="signin-aside-title">Welcome back</h2>
-          <p>
-            Sign in to open your dashboard with uploads, balance, and the full Tools catalog in the header.
-          </p>
+          <p>Sign in to open your dashboard. Administrators are sent to the admin console automatically.</p>
           <ul className="help-list">
-            <li>Use the Tools menu for converters and OCR before or after login.</li>
             <li>Passwords are at least 12 characters.</li>
-            <li>Admins are routed to the admin console automatically.</li>
+            <li>New here? Use Sign up from the header.</li>
           </ul>
         </aside>
         <main id="main-content" className="auth-card">
