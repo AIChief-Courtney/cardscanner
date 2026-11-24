@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Layers, Shield } from "lucide-react";
+import { ChevronDown, Layers, Shield } from "lucide-react";
+
+const dashboardMenus = [
+  { label: "Convert", links: [{ href: "#converter", label: "Image Converter" }, { href: "#features", label: "Supported Formats" }] },
+  { label: "Tools", links: [{ href: "#converter", label: "File Converter" }, { href: "#privacy", label: "Local Processing" }] },
+];
 
 export function Brand({ href = "/" }: { href?: string }) {
   return (
@@ -47,14 +52,30 @@ export function Header({
   return (
     <header className="header header--product header--fc">
       <div className="header-inner header-inner--fc">
-          <Brand href={dashboard ? "#main-content" : "/"} />
-          {dashboard && (
-            <nav className="dashboard-nav" aria-label="Main navigation">
-              <a href="#converter">Convert</a>
-              <a href="#features">Formats</a>
-              <a href="#privacy">Privacy</a>
-            </nav>
-          )}
+        <Brand href={dashboard ? "#main-content" : "/"} />
+        {dashboard && (
+          <nav className="dashboard-nav" aria-label="Main navigation">
+            {dashboardMenus.map(({ label, links }) => (
+              <details key={label} onBlur={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false;
+              }} onKeyDown={(event) => {
+                if (event.key !== "Escape" || !event.currentTarget.open) return;
+                event.currentTarget.open = false;
+                event.currentTarget.querySelector("summary")?.focus();
+              }}>
+                <summary>{label} <ChevronDown size={12} aria-hidden /></summary>
+                <div>
+                  {links.map((link) => (
+                    <a key={link.href} href={link.href} onClick={(event) => {
+                      const menu = event.currentTarget.closest("details");
+                      if (menu) menu.open = false;
+                    }}>{link.label}</a>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </nav>
+        )}
         <div className="header-actions header-actions--fc">
           {!signedIn ? (
             <>

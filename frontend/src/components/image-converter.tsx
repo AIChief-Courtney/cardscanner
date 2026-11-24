@@ -1,7 +1,8 @@
 ﻿"use client";
 
-import { ArrowDownToLine, ChevronDown, FilePlus } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, Clipboard, FilePlus, Link2, Monitor } from "lucide-react";
 import { useRef, useState } from "react";
+import type { FormEvent } from "react";
 import styles from "./dashboard.module.css";
 
 const formats = {
@@ -13,12 +14,17 @@ type Format = keyof typeof formats;
 
 export function ImageConverter() {
   const picker = useRef<HTMLInputElement>(null);
+  const importDialog = useRef<HTMLDialogElement>(null);
+  const sourceToggle = useRef<HTMLButtonElement>(null);
   const [file, setFile] = useState<File>();
   const [format, setFormat] = useState<Format>("png");
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [sourcesOpen, setSourcesOpen] = useState(false);
+  const [source, setSource] = useState<"url" | "clipboard">("url");
+  const [importError, setImportError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function selectFile(candidate?: File) {
     if (!candidate) return;
@@ -29,6 +35,50 @@ export function ImageConverter() {
     }
     setFile(candidate);
     setMessage("");
+  }
+
+  function openImport(nextSource: "url" | "clipboard") {
+    setSourcesOpen(false);
+    setSource(nextSource);
+    setImportError("");
+    importDialog.current?.showModal();
+    requestAnimationFrame(() => importDialog.current?.querySelector<HTMLElement>("input, textarea")?.focus());
+  }
+
+  async function importUrl(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (loading) return;
+    const address = String(new FormData(event.currentTarget).get("url"));
+    const url = URL.canParse(address) ? new URL(address) : null;
+    if (!url || !["https:", "http:"].includes(url.protocol) || url.username || url.password) {
+      setImportError("Enter an HTTP or HTTPS image URL without credentials.");
+      return;
+    }
+
+    setLoading(true);
+    setImportError("");
+    try {
+      const response = await fetch(url, {
+        credentials: "omit",
+        referrerPolicy: "no-referrer",
+        signal: AbortSignal.timeout(20_000),
+      });
+      if (!response.ok) throw new Error("Image request failed");
+      const mime = response.headers.get("content-type")?.split(";")[0]?.trim();
+      const format = (Object.keys(formats) as Format[]).find((key) => formats[key] === mime);
+      if (!format) {
+        setImportError("Use a direct link to a JPG, PNG, or WebP image.");
+        return;
+      }
+      const blob = await response.blob();
+      const name = url.pathname.split("/").pop()?.replace(/\.[^.]+$/, "") || "image";
+      selectFile(new File([blob], `${name}.${format}`, { type: blob.type }));
+      importDialog.current?.close();
+    } catch {
+      setImportError("Could not load this link. Use a public image URL that allows browser access, or download it and choose From device.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function convert() {
@@ -115,20 +165,55 @@ export function ImageConverter() {
           }}>
             <FilePlus size={16} aria-hidden /> Choose Files
           </button>
-          <button type="button" aria-label="File sources" aria-expanded={sourcesOpen} disabled={busy}
+          <button ref={sourceToggle} type="button" aria-label="File sources" aria-expanded={sourcesOpen} disabled={busy}
             onClick={() => setSourcesOpen(!sourcesOpen)}>
             <ChevronDown size={16} aria-hidden />
           </button>
           {sourcesOpen && (
-            <button className={styles.source} type="button" onClick={() => {
-              setSourcesOpen(false);
-              picker.current?.click();
-            }}>From device</button>
+            <div className={styles.source}>
+              <button type="button" onClick={() => {
+                setSourcesOpen(false);
+                sourceToggle.current?.focus();
+                picker.current?.click();
+              }}><Monitor size={15} aria-hidden /> From device</button>
+              <button type="button" onClick={() => openImport("url")}><Link2 size={15} aria-hidden /> From URL</button>
+              <button type="button" onClick={() => openImport("clipboard")}><Clipboard size={15} aria-hidden /> From clipboard</button>
+            </div>
           )}
         </div>
         <p>{file?.name ?? "Drop a JPG, PNG, or WebP image here"}</p>
         <small>Your files are processed on your device.</small>
       </div>
+
+      <dialog ref={importDialog} className={styles.importDialog} aria-labelledby="import-heading"
+        onCancel={(event) => { if (loading) event.preventDefault(); }}
+        onClose={() => sourceToggle.current?.focus()}>
+        <h2 id="import-heading">{source === "url" ? "Import from URL" : "Import from clipboard"}</h2>
+        {source === "url" ? (
+          <form onSubmit={importUrl}>
+            <label>Public image URL<input type="url" name="url" required placeholder="https://example.com/image.png" /></label>
+            <button type="submit" className={styles.primary} disabled={loading}>{loading ? "Importing…" : "Import image"}</button>
+          </form>
+        ) : (
+          <label>Paste an image here
+            <textarea rows={2} onPaste={(event) => {
+              event.preventDefault();
+              const image = Array.from(event.clipboardData.files).find((file) =>
+                Object.values(formats).some((mime) => mime === file.type)
+              );
+              if (!image) {
+                setImportError("Copy a JPG, PNG, or WebP image and paste it here.");
+                return;
+              }
+              const extension = image.type.split("/")[1];
+              selectFile(new File([image], `clipboard.${extension}`, { type: image.type }));
+              importDialog.current?.close();
+            }} />
+          </label>
+        )}
+        {importError && <p role="alert">{importError}</p>}
+        <button className={styles.cancel} type="button" disabled={loading} onClick={() => importDialog.current?.close()}>Cancel</button>
+      </dialog>
 
       {file && <div className={styles.controls}>
         <label>

@@ -32,6 +32,30 @@
   font-size: 11px;
 }
 
+.topbar :global(.dashboard-nav details) { position: relative; }
+.topbar :global(.dashboard-nav summary) {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-block: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+.topbar :global(.dashboard-nav summary::-webkit-details-marker) { display: none; }
+.topbar :global(.dashboard-nav details > div) {
+  position: absolute;
+  top: 100%;
+  left: -12px;
+  min-width: 155px;
+  padding: 4px;
+  border: 1px solid #e1e3ef;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgb(22 34 54 / 12%);
+}
+.topbar :global(.dashboard-nav a) { display: block; padding: 8px; border-radius: 3px; white-space: nowrap; }
+.topbar :global(.dashboard-nav a:hover) { background: #eeeef4; }
+
 .topbar :global(.fc-login-link),
 .topbar :global(.fc-logout-link) { font-size: 11px; padding: 4px 6px; white-space: nowrap; }
 
@@ -107,21 +131,53 @@
   font-weight: 700;
 }
 
-.filePicker button:first-child { border-radius: 4px 0 0 4px; }
-.filePicker button:nth-child(2) { border-left: 1px solid #a8abff; border-radius: 0 4px 4px 0; }
+.filePicker > button:first-child { border-radius: 4px 0 0 4px; }
+.filePicker > button:nth-child(2) { border-left: 1px solid #a8abff; border-radius: 0 4px 4px 0; }
 
 .filePicker .source {
   position: absolute;
   z-index: 2;
   top: calc(100% + 4px);
   left: 0;
-  width: 100%;
+  min-width: max(100%, 158px);
+  padding: 4px;
   border-radius: 4px;
   border: 1px solid #d1d3ef;
   color: var(--ink);
   background: #fff;
   box-shadow: 0 4px 14px rgb(22 34 54 / 14%);
 }
+
+.source button {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 34px;
+  gap: 8px;
+  padding: 0 8px;
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.source button:hover { background: #eeeef4; }
+
+.importDialog {
+  width: min(410px, calc(100% - 32px));
+  padding: 24px;
+  border: 1px solid #d1d3ef;
+  border-radius: 8px;
+  color: var(--ink);
+}
+.importDialog::backdrop { background: rgb(28 43 66 / 42%); }
+.importDialog h2 { margin: 0 0 14px; font-size: 18px; }
+.importDialog label { display: grid; gap: 6px; font-size: 13px; }
+.importDialog :is(input, textarea) { width: 100%; min-height: 39px; border: 1px solid #aeb2d4; border-radius: 4px; padding: 8px; font: inherit; }
+.importDialog :is(.primary, .cancel) { margin-top: 12px; }
+.importDialog p { font-size: 13px; }
+.cancel { border: 0; padding: 8px; color: #484ec9; background: transparent; font: inherit; font-size: 13px; }
 
 .controls {
   display: flex;
