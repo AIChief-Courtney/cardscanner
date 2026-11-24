@@ -6,12 +6,12 @@ import { Layers, Shield } from "lucide-react";
 
 export function Brand({ href = "/" }: { href?: string }) {
   return (
-    <Link href={href} className="brand brand--fc" aria-label="Card Scanner home">
+    <Link href={href} className="brand brand--fc" aria-label="OnlineConvert home">
       <span className="brand-icon brand-icon--fc" aria-hidden>
         <Layers size={22} strokeWidth={2.25} />
       </span>
       <span className="brand-word-fc">
-        Card<span className="brand-word-fc-accent">Scanner</span>
+        Online<span className="brand-word-fc-accent">Convert</span>
       </span>
     </Link>
   );

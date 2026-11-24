@@ -2,14 +2,14 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Card Scanner", template: "%s · Card Scanner" },
-  description: "Sign in, manage your balance, and use the Card Scanner dashboard.",
-  applicationName: "Card Scanner",
+  title: { default: "OnlineConvert", template: "%s · OnlineConvert" },
+  description: "Sign in, manage your balance, and use the OnlineConvert dashboard.",
+  applicationName: "OnlineConvert",
   robots: { index: true, follow: true },
   openGraph: {
-    title: "Card Scanner",
+    title: "OnlineConvert",
     description: "User dashboard with sign-in and admin console.",
-    siteName: "Card Scanner",
+    siteName: "OnlineConvert",
     type: "website",
   },
 };

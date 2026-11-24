@@ -16,7 +16,7 @@ export default async function SignUp() {
       <Header />
       <div className="auth-layout">
         <aside className="auth-aside" aria-labelledby="signup-aside-title">
-          <span className="eyebrow eyebrow--product">Card Scanner</span>
+          <span className="eyebrow eyebrow--product">OnlineConvert</span>
           <h2 id="signup-aside-title">Create your free account</h2>
           <p>One quick form — we sign you in and send you straight to the dashboard.</p>
           <ul className="help-list">

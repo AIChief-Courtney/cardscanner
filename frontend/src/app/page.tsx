@@ -7,7 +7,6 @@ import { SiteFooter } from "@/components/site-footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Card Scanner",
   description: "Sign in to your dashboard or create an account.",
 };
 
@@ -20,7 +19,7 @@ export default async function HomePage() {
       <Header />
       <main id="main-content" className="home-landing workspace">
         <div className="panel home-landing-card">
-          <span className="eyebrow eyebrow--product">Card Scanner</span>
+          <span className="eyebrow eyebrow--product">OnlineConvert</span>
           <h1>Your files, one signed-in workspace</h1>
           <p>
             Create an account or sign in to open your dashboard. Administrators use the same login and are routed to

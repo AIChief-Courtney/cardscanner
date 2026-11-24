@@ -17,7 +17,7 @@ export function Dashboard({
         <div className="user-dashboard-hero-text">
           <span className="eyebrow eyebrow--product">Your workspace</span>
           <h1>Dashboard</h1>
-          <p>Signed-in home for Card Scanner. More product tools will appear here as you wire them in.</p>
+          <p>Signed-in home for OnlineConvert. More product tools will appear here as you wire them in.</p>
         </div>
         <div className="user-dashboard-account">
           <span className="user-dashboard-avatar" aria-hidden>

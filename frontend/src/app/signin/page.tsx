@@ -17,7 +17,7 @@ export default async function SignIn() {
       <Header />
       <div className="auth-layout">
         <aside className="auth-aside" aria-labelledby="signin-aside-title">
-          <span className="eyebrow eyebrow--product">Card Scanner</span>
+          <span className="eyebrow eyebrow--product">OnlineConvert</span>
           <h2 id="signin-aside-title">Welcome back</h2>
           <p>Sign in to open your dashboard. Administrators are sent to the admin console automatically.</p>
           <ul className="help-list">
