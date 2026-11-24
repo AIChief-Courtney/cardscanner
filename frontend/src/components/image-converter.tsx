@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { ArrowDownToLine, ImagePlus } from "lucide-react";
+import { ArrowDownToLine, ChevronDown, FilePlus } from "lucide-react";
 import { useRef, useState } from "react";
 import styles from "./dashboard.module.css";
 
@@ -18,6 +18,7 @@ export function ImageConverter() {
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [sourcesOpen, setSourcesOpen] = useState(false);
 
   function selectFile(candidate?: File) {
     if (!candidate) return;
@@ -73,7 +74,7 @@ export function ImageConverter() {
   }
 
   return (
-    <section className={styles.converter} aria-label="Convert an image">
+    <section id="converter" className={styles.converter} aria-label="Convert an image">
       <div
         className={styles.dropZone}
         data-dragging={dragging}
@@ -90,8 +91,6 @@ export function ImageConverter() {
           if (!busy) selectFile(event.dataTransfer.files[0]);
         }}
       >
-        <ImagePlus size={30} aria-hidden />
-        <p>{file?.name ?? "Drop an image here"}</p>
         <input
           ref={picker}
           type="file"
@@ -102,12 +101,36 @@ export function ImageConverter() {
             event.currentTarget.value = "";
           }}
         />
-        <button className={styles.secondary} type="button" disabled={busy} onClick={() => picker.current?.click()}>
-          {file ? "Choose another image" : "Choose image"}
-        </button>
+        <div className={styles.filePicker} onBlur={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setSourcesOpen(false);
+        }} onKeyDown={(event) => {
+          if (event.key === "Escape" && sourcesOpen) {
+            setSourcesOpen(false);
+            event.currentTarget.querySelector<HTMLButtonElement>("[aria-expanded]")?.focus();
+          }
+        }}>
+          <button type="button" disabled={busy} onClick={() => {
+            setSourcesOpen(false);
+            picker.current?.click();
+          }}>
+            <FilePlus size={16} aria-hidden /> Choose Files
+          </button>
+          <button type="button" aria-label="File sources" aria-expanded={sourcesOpen} disabled={busy}
+            onClick={() => setSourcesOpen(!sourcesOpen)}>
+            <ChevronDown size={16} aria-hidden />
+          </button>
+          {sourcesOpen && (
+            <button className={styles.source} type="button" onClick={() => {
+              setSourcesOpen(false);
+              picker.current?.click();
+            }}>From device</button>
+          )}
+        </div>
+        <p>{file?.name ?? "Drop a JPG, PNG, or WebP image here"}</p>
+        <small>Your files are processed on your device.</small>
       </div>
 
-      <div className={styles.controls}>
+      {file && <div className={styles.controls}>
         <label>
           Output format
           <select value={format} disabled={busy} onChange={(event) => setFormat(event.target.value as Format)}>
@@ -120,7 +143,7 @@ export function ImageConverter() {
           <ArrowDownToLine size={17} aria-hidden />
           {busy ? "Converting…" : "Convert and download"}
         </button>
-      </div>
+      </div>}
       <p className={styles.status} role="status">{message}</p>
     </section>
   );

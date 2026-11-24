@@ -21,10 +21,12 @@ export function Header({
   signedIn = false,
   admin = false,
   variant = "default",
+  dashboard = false,
 }: {
   signedIn?: boolean;
   admin?: boolean;
   variant?: "default" | "admin";
+  dashboard?: boolean;
 }) {
   if (variant === "admin") {
     return (
@@ -45,7 +47,14 @@ export function Header({
   return (
     <header className="header header--product header--fc">
       <div className="header-inner header-inner--fc">
-        <Brand href="/" />
+          <Brand href={dashboard ? "#main-content" : "/"} />
+          {dashboard && (
+            <nav className="dashboard-nav" aria-label="Main navigation">
+              <a href="#converter">Convert</a>
+              <a href="#features">Formats</a>
+              <a href="#privacy">Privacy</a>
+            </nav>
+          )}
         <div className="header-actions header-actions--fc">
           {!signedIn ? (
             <>
@@ -58,7 +67,8 @@ export function Header({
             </>
           ) : (
             <>
-              {!admin && (
+              {dashboard && <a className="fc-login-link" href="#account">My account</a>}
+              {!admin && !dashboard && (
                 <Link className="fc-login-link" href="/dashboard">
                   Dashboard
                 </Link>
