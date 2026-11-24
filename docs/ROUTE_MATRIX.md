@@ -4,7 +4,8 @@
 | --- | --- |
 | `/` | Landing — sign in / sign up |
 | `/signin`, `/signup` | Authentication |
-| `/dashboard` | Signed-in user home (login required) |
+| `/dashboard` | FreeConvert account hub proxy (`account/tasks`) when signed in |
+| `/dashboard/*` | FC account subpages (billing, jobs, API keys, …) |
 | `/admin`, `/admin/overview`, `/admin/users`, `/admin/activity` | Admin console |
 | `/api/auth/*`, `/api/register`, `/api/profile/*` | Auth & profile APIs |
 | `/api/admin/*` | Admin APIs |

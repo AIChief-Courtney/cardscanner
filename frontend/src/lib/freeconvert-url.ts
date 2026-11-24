@@ -1,0 +1,1 @@
+export const FREECONVERT_ORIGIN = "https://www.freeconvert.com";

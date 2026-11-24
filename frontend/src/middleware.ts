@@ -1,14 +1,44 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import { isAdmin } from "@backend/lib/roles";
+import { dashboardToFcPath, shouldServeLocalApp } from "@/lib/fc-local-routes";
 
-/** Legacy URLs from the old account hub → dashboard. */
-const LEGACY_USER_HUB = ["/profile", "/account"];
-
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (LEGACY_USER_HUB.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+  if (pathname.startsWith("/account")) {
+    const suffix = pathname.slice("/account".length) || "";
+    return NextResponse.redirect(new URL(`/dashboard${suffix}`, request.url));
+  }
+  if (pathname === "/profile" || pathname.startsWith("/profile/")) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  const fcDashboardPath = dashboardToFcPath(pathname);
+  if (fcDashboardPath) {
+    const token = await getToken({
+      req: request,
+      secret: process.env.AUTH_SECRET,
+    });
+    if (!token?.sub) {
+      const url = new URL("/signin", request.url);
+      url.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(url);
+    }
+    if (isAdmin(token.role)) {
+      return NextResponse.redirect(new URL("/admin/overview", request.url));
+    }
+    return NextResponse.rewrite(new URL(`/fc/${fcDashboardPath}`, request.url));
+  }
+
+  if (pathname.startsWith("/api") && !shouldServeLocalApp(pathname)) {
+    const apiPath = pathname.replace(/^\//, "");
+    return NextResponse.rewrite(new URL(`/fc/${apiPath}`, request.url));
+  }
+
+  if (shouldServeLocalApp(pathname)) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();
