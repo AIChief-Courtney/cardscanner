@@ -13,10 +13,10 @@ export default async function DashboardPage() {
   if (!user) redirect("/signin");
   if (isAdmin(user.role)) redirect(accountHomePath(user.role));
   return (
-    <>
+    <div className="auth-page">
       <Header signedIn={true} admin={false} />
       <Dashboard email={user.email} balanceUsd={user.balanceUsd} />
       <SiteFooter signedIn={true} admin={false} />
-    </>
+    </div>
   );
 }
