@@ -2,14 +2,14 @@ import { redirect } from "next/navigation";
 import { Header } from "@/components/brand";
 import { AuthForm } from "@/components/auth-form";
 import { SiteFooter } from "@/components/site-footer";
-import { currentUser } from "@backend/lib/access";
 import { accountHomePath } from "@backend/lib/roles";
+import { safeHeaderUser } from "@/lib/safe-session";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false, follow: false } };
 
 export default async function SignIn() {
-  const user = await currentUser();
+  const user = await safeHeaderUser();
   if (user) redirect(accountHomePath(user.role));
 
   return (

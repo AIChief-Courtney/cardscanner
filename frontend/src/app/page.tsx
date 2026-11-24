@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { currentUser } from "@backend/lib/access";
 import { accountHomePath } from "@backend/lib/roles";
+import { safeHeaderUser } from "@/lib/safe-session";
 import { Header } from "@/components/brand";
 import { SiteFooter } from "@/components/site-footer";
 import type { Metadata } from "next";
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const user = await currentUser();
+  const user = await safeHeaderUser();
   if (user) redirect(accountHomePath(user.role));
 
   return (
