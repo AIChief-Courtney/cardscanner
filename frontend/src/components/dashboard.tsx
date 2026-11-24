@@ -1,4 +1,5 @@
 import { Cloud, File, Globe, LockKeyhole, Shield, Wallet } from "lucide-react";
+import Link from "next/link";
 import { formatUsd } from "@/lib/money";
 import { ImageConverter } from "./image-converter";
 import { DashboardHeader } from "./dashboard-header";
@@ -39,7 +40,7 @@ export function Dashboard({ email, balanceUsd }: { email: string; balanceUsd: st
             <div>
               <h2 id="privacy-heading">Your Data, Our Priority</h2>
               <p>OnlineConvert processes images locally in your browser. Your selected image stays on your device throughout the conversion.</p>
-              <a href="#converter">Back to the converter</a>
+              <Link href="/security-and-compliance">Learn more about our commitment to security</Link>
             </div>
             <ul>
               <li><LockKeyhole size={17} aria-hidden /> Local processing</li>

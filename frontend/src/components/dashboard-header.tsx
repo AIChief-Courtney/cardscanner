@@ -2,6 +2,7 @@
 
 import { ChevronDown, FileText, Image as ImageIcon, LayoutGrid, Search, Video } from "lucide-react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Brand } from "./brand";
 import styles from "./dashboard.module.css";
@@ -43,7 +44,7 @@ const availableTools = new Map([
 type Menu = keyof typeof menus | "Search";
 const menuNames = Object.keys(menus) as (keyof typeof menus)[];
 
-export function DashboardHeader() {
+export function DashboardHeader({ onDashboard = true, signedIn = true }: { onDashboard?: boolean; signedIn?: boolean }) {
   const [open, setOpen] = useState<Menu | null>(null);
   const [query, setQuery] = useState("");
   const trigger = useRef<HTMLButtonElement>(null);
@@ -81,7 +82,7 @@ export function DashboardHeader() {
       {open && <div className={styles.navBackdrop} aria-hidden="true" onClick={() => close(true)} />}
       <div className={styles.navFrame}>
         <div className={styles.navRow}>
-          <Brand href="#main-content" />
+          <Brand href={onDashboard ? "#main-content" : "/"} />
           <nav className={styles.navTabs} aria-label="Main navigation">
             {menuNames.map((menu) => (
               <button key={menu} type="button" aria-expanded={open === menu}
@@ -98,8 +99,17 @@ export function DashboardHeader() {
               onClick={(event) => toggle("Search", event.currentTarget)}>
               <Search size={14} aria-hidden />
             </button>
-            <a href="#account" onClick={() => close()}>My account</a>
-            <button className={styles.logout} type="button" onClick={() => signOut({ callbackUrl: "/" })}>Log out</button>
+            {signedIn ? (
+              <>
+                <Link href={onDashboard ? "#account" : "/dashboard#account"} onClick={() => close()}>My account</Link>
+                <button className={styles.logout} type="button" onClick={() => signOut({ callbackUrl: "/" })}>Log out</button>
+              </>
+            ) : (
+              <>
+                <Link href="/signin">Log In</Link>
+                <Link className={styles.logout} href="/signup">Sign Up</Link>
+              </>
+            )}
           </div>
         </div>
 
@@ -108,7 +118,7 @@ export function DashboardHeader() {
             <input ref={search} type="search" aria-label="Search available tools" placeholder="Search tools" value={query}
               onChange={(event) => setQuery(event.target.value)} />
             <ul>
-              {searchResults.map(([name, href]) => <li key={name}><a href={href} onClick={() => close()}>{name}</a></li>)}
+              {searchResults.map(([name, href]) => <li key={name}><a href={onDashboard ? href : `/dashboard${href}`} onClick={() => close()}>{name}</a></li>)}
             </ul>
             {searchResults.length === 0 && <p>No tools found.</p>}
           </section>
@@ -122,7 +132,7 @@ export function DashboardHeader() {
                 <ul>
                   {items.map((item) => {
                     const href = availableTools.get(item);
-                    return <li key={item}>{href ? <a href={href} onClick={() => close()}>{item}</a> :
+                    return <li key={item}>{href ? <a href={onDashboard ? href : `/dashboard${href}`} onClick={() => close()}>{item}</a> :
                       <span aria-disabled="true" title="Unavailable">{item}</span>}</li>;
                   })}
                 </ul>
